@@ -1,5 +1,11 @@
+/* http://clrs.cc/ */
 :root {
   --color-black: #333333;
+  --color-lighter-gray: #f6f6f6;
+  --color-light-gray: #dddddd;
+  --color-dark-gray: #666666;
+  --color-blue: #0074d9;
+  --color-white: #ffffff;
 }
 
 * {
@@ -7,16 +13,182 @@
   font-size: inherit;
 }
 
+:focus {
+  outline: calc(3rem/16) solid var(--color-blue);
+  outline-offset: calc(2rem/16);
+}
+
+html {
+  background-color: var(--color-lighter-gray);
+}
+
 body {
   color: var(--color-black);
   font-size: 100%;
   font-family: system-ui, sans-serif;
-  padding: 2rem;
+  padding: 0;
   margin: 0;
+}
+
+main {
+  font-size: calc(18rem/16);
+  line-height: calc(28rem/16);
+  margin: 0 auto;
+  max-width: 45rem;
+  padding: 4rem;
 }
 
 h1 {
   font-size: 2rem;
   line-height: 2.5rem;
   margin: 0;
+}
+
+h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  margin: 2rem 0 0;
+}
+
+ol,
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  margin: 1rem 0 0;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+small {
+  color: var(--color-dark-gray);
+  display: block;
+  font-weight: normal;
+}
+
+input {
+  border: calc(2rem/16) solid var(--color-black);
+  line-height: inherit;
+  margin-top: 0.5rem;
+  max-width: 12rem;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+button,
+.button {
+  background-color: var(--color-white);
+  border-radius: 0.25rem;
+  border-style: solid;
+  border: calc(2rem/16) solid var(--color-light-gray);
+  color: var(--color-black);
+  cursor: pointer;
+  display: inline-block;
+  font-weight: bold;
+  height: calc(40rem/16);
+  line-height: inherit;
+  margin: 0;
+  padding: 0 0.75rem;
+  text-decoration: none;
+}
+
+button:hover,
+.button:hover {
+  color: var(--color-blue);
+}
+
+button:active,
+.button:active {
+  background-color: var(--color-light-gray);
+  border-color: var(--color-dark-gray);
+  color: var(--color-black);
+}
+
+.button--icon {
+  align-items: center;
+  border-color: transparent;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  width: calc(40rem/16);
+}
+
+.button--icon:active {
+  border-color: transparent;
+}
+
+.button--icon svg {
+  fill: none;
+  height: 24px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  width: 24px;
+}
+
+button:focus,
+.button:focus {
+  border-color: var(--color-blue);
+  outline: none;
+}
+
+.box:not(:empty) {
+  background-color: var(--color-white);
+  border: calc(1rem/16) solid var(--color-light-gray);
+  border-radius: 0.25rem;
+  list-style-type: none;
+  margin-top: 1rem;
+}
+
+.box__row {
+  padding: 1rem;
+  margin: 0;
+}
+
+.box__row + .box__row {
+  border-top: calc(1rem/16) solid var(--color-light-gray);
+}
+
+.group {
+  display: flex;
+}
+
+.group > *:not(:last-child) {
+  margin-right: 0.5rem;
+}
+
+/*
+ * Utilities
+ */
+
+.flex-space-between {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.m-top {
+  margin-top: 1rem;
+}
+
+.width-sm {
+  max-width: 20rem;
+}
+
+.sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }

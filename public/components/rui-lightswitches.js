@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs'
 import { map, shareReplay, distinctUntilChanged, tap } from 'rxjs/operators'
-import { define, html, renderComponent } from '../util/dom.js'
+import { define, html, renderComponent, svg } from '../util/dom.js'
 import { combineLatestObject, debug } from '../util/rx.js'
 import { useKeychain, useList, useSubscribe } from '../util/use.js'
 import { withProperties } from '../util/with.js'
@@ -91,20 +91,40 @@ function useLightSwitch (power = OFF, other = {}) {
 function renderRoom (props) {
   const { addLight, toggleAll, lights } = props
   return html`
-    <h1>Room lights (${lights.onCount}/${lights.count})</h1>
-    <button onclick=${addLight}>Add light</button>
-    <button onclick=${toggleAll} hidden=${lights.count ? null : true}>Toggle all</button>
-    <ol>${lights.list.map(renderLight)}</ol>
+    <h2>Room lights (${lights.onCount}/${lights.count} on)</h2>
+    <div class='group m-top'>
+      <button onclick=${addLight}>Add light</button>
+      <button onclick=${toggleAll} hidden=${lights.count ? null : true}>Toggle all</button>
+    </div>
+    <ol class='box width-sm'>${lights.list.map(renderLight)}</ol>
   `
 }
 
 function renderLight (props) {
   const { key, label, remove, toggle } = props
   return html`
-    <li>
-      <span>Light ${key}: ${label}</span>
-      <button onclick=${toggle}>Toggle</button>
-      <button onclick=${remove}>Remove</button>
+    <li class='box__row flex-space-between'>
+      <span><strong>${key}:</strong> ${label}</span>
+      <span class='group'>
+        <button onclick=${toggle}>Toggle</button>
+        <button onclick=${remove} class='button button--icon'>
+          ${renderIcon('x')}
+          <span class='sr-only'>Remove</span>
+        </button>
+      </span>
     </li>
+  `
+}
+
+const x = svg`<use xlink:href='/icons.svg#x'></use>`
+const icons = { x }
+
+// https://feathericons.com/
+// https://github.com/feathericons/feather
+function renderIcon (name) {
+  return html`
+    <svg aria-hidden='true'>
+      ${icons[name]}
+    </svg>
   `
 }
