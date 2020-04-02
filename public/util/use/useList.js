@@ -1,6 +1,6 @@
 import { BehaviorSubject, combineLatest, isObservable, of } from 'rxjs'
 import { shareReplay, switchMap } from 'rxjs/operators'
-import { withProperties } from './withProperties.js'
+import { withProperties } from '../with.js'
 
 export function useList () {
   const list$ = new BehaviorSubject(new Map())

@@ -1,7 +1,9 @@
 import { BehaviorSubject } from 'rxjs'
 import { map, shareReplay, distinctUntilChanged, tap } from 'rxjs/operators'
-import { define, html } from 'uce'
-import { combineLatestObject, debug, renderComponent, useKeychain, useList, useSubscribe, withProperties } from '../util.js'
+import { define, html, renderComponent } from '../util/dom.js'
+import { combineLatestObject, debug } from '../util/rx.js'
+import { useKeychain, useList, useSubscribe } from '../util/use.js'
+import { withProperties } from '../util/with.js'
 
 const ON = true
 const OFF = false
@@ -11,25 +13,20 @@ const powerLabels = {
   [OFF]: 'Off'
 }
 
-define('rui-lightswitches', {
-  init () {
-    const [ subscribe, unsubscribe ] = useSubscribe()
-    const lights$ = useLightSwitches()
-    lights$.add(ON)
-    const props$ = combineLatestObject({
-      addLight: () => lights$.add(OFF),
-      toggleAll: lights$.toggle,
-      lights: lights$,
-    })
-    const render$ = props$.pipe(
-      renderComponent(this, renderRoom)
-    )
-    subscribe(render$)
-    this.unsubscribe = unsubscribe
-  },
-  disconnected () {
-    this.unsubscribe()
-  }
+define('rui-lightswitches', (el) => {
+  const [ subscribe, unsubscribe ] = useSubscribe()
+  const lights$ = useLightSwitches()
+  lights$.add(ON)
+  const props$ = combineLatestObject({
+    addLight: () => lights$.add(OFF),
+    toggleAll: lights$.toggle,
+    lights: lights$,
+  })
+  const render$ = props$.pipe(
+    renderComponent(el, renderRoom)
+  )
+  subscribe(render$)
+  return unsubscribe
 })
 
 function useLightSwitches () {
