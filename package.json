@@ -25,15 +25,15 @@
   },
   "dependencies": {
     "es-module-shims": "0.4.6",
-    "lighterhtml": "3.0.0",
-    "rxjs": "6.5.4"
+    "rxjs": "6.5.4",
+    "uce": "0.8.0"
   },
   "snowpack": {
     "webDependencies": [
       "es-module-shims",
-      "lighterhtml",
       "rxjs",
-      "rxjs/operators"
+      "rxjs/operators",
+      "uce"
     ]
   }
 }
