@@ -1,0 +1,5 @@
+node_modules/
+public/web_modules/
+package-lock.json
+service-worker.js
+.DS_STORE
