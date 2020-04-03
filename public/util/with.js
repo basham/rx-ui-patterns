@@ -4,9 +4,9 @@ export function withProperties (target, properties = {}) {
   }
   return new Proxy(target, {
     get: (target, name) => {
-      const fn = typeof properties[name] === 'function' ?
-        properties[name] :
-        Reflect.get
+      const fn = typeof properties[name] === 'function'
+        ? properties[name]
+        : Reflect.get
       return fn(target, name)
     }
   })

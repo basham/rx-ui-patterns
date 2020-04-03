@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs'
 import { map, shareReplay, distinctUntilChanged, tap } from 'rxjs/operators'
 import { define, html, renderComponent, svg } from '../util/dom.js'
-import { combineLatestObject, debug } from '../util/rx.js'
+import { combineLatestObject } from '../util/rx.js'
 import { useKeychain, useList, useSubscribe } from '../util/use.js'
 import { withProperties } from '../util/with.js'
 
@@ -14,13 +14,13 @@ const powerLabels = {
 }
 
 define('rui-lightswitches', (el) => {
-  const [ subscribe, unsubscribe ] = useSubscribe()
+  const [subscribe, unsubscribe] = useSubscribe()
   const lights$ = useLightSwitches()
   lights$.add(ON)
   const props$ = combineLatestObject({
     addLight: () => lights$.add(OFF),
     toggleAll: lights$.toggle,
-    lights: lights$,
+    lights: lights$
   })
   const render$ = props$.pipe(
     renderComponent(el, renderRoom)
@@ -55,7 +55,7 @@ function useLightSwitches () {
         list, count, onCount, offCount, isAllOn, isAllOff, add
       }
     }),
-    tap((v) => output = v),
+    tap((v) => { output = v }),
     shareReplay(1)
   )
   return withProperties(output$, {

@@ -9,5 +9,5 @@ export function useCallbackStack () {
     stack.forEach((callback) => callback())
     stack.clear()
   }
-  return [ add, call ]
+  return [add, call]
 }

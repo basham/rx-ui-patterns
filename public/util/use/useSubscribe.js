@@ -2,7 +2,7 @@ import { Subscription, isObservable } from 'rxjs'
 import { useCallbackStack } from './useCallbackStack.js'
 
 export function useSubscribe () {
-  const [ add, unsubscribe ] = useCallbackStack()
+  const [add, unsubscribe] = useCallbackStack()
   const subscribe = (source) => {
     if (isObservable(source)) {
       const sub = source.subscribe()
@@ -15,8 +15,7 @@ export function useSubscribe () {
     }
     if (typeof source === 'function') {
       add(source)
-      return
     }
   }
-  return [ subscribe, unsubscribe ]
+  return [subscribe, unsubscribe]
 }

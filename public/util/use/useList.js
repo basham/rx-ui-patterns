@@ -18,13 +18,13 @@ export function useList () {
     list$.next(list)
     return r
   }
-  const value = () => [ ...list$.value.values() ]
+  const value = () => [...list$.value.values()]
   const subject$ = () => list$
   const output$ = list$.pipe(
     // Every time a value is added or removed,
     // watch for changes for all the values.
     switchMap((list) => {
-      const values = [ ...list.values() ]
+      const values = [...list.values()]
       return values.length ? combineLatest(values) : of([])
     }),
     shareReplay(1)
