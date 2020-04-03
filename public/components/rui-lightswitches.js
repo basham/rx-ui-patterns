@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs'
 import { map, shareReplay, distinctUntilChanged, tap } from 'rxjs/operators'
-import { define, html, renderComponent, svg } from '../util/dom.js'
+import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
 import { useKeychain, useList, useSubscribe } from '../util/use.js'
 import { withProperties } from '../util/with.js'
