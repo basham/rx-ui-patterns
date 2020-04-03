@@ -116,15 +116,13 @@ function renderLight (props) {
   `
 }
 
-const x = svg`<use xlink:href='/icons.svg#x'></use>`
-const icons = { x }
-
 // https://feathericons.com/
 // https://github.com/feathericons/feather
 function renderIcon (name) {
+  const href = `/icons.svg#${name}`
   return html`
     <svg aria-hidden='true'>
-      ${icons[name]}
+      <use href=${href}></use>
     </svg>
   `
 }
