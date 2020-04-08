@@ -1,9 +1,8 @@
 import { BehaviorSubject } from 'rxjs'
-import { map, shareReplay, distinctUntilChanged, tap } from 'rxjs/operators'
+import { map, shareReplay, distinctUntilChanged } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useKeychain, useList, useSubscribe } from '../util/use.js'
-import { withProperties } from '../util/with.js'
+import { useKeychain, useLatest, useMap, useSubscribe } from '../util/use.js'
 
 const ON = true
 const OFF = false
@@ -15,12 +14,12 @@ const powerLabels = {
 
 define('rui-lightswitches', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const lights$ = useLightSwitches()
-  lights$.add(ON)
+  const lights = useLightSwitches()
+  lights.add(ON)
   const props$ = combineLatestObject({
-    addLight: () => lights$.add(OFF),
-    toggleAll: lights$.toggle,
-    lights: lights$
+    addLight: () => lights.add(OFF),
+    toggleAll: lights.toggleAll,
+    lights: lights.latest$
   })
   const render$ = props$.pipe(
     renderComponent(el, renderRoom)
@@ -30,21 +29,22 @@ define('rui-lightswitches', (el) => {
 })
 
 function useLightSwitches () {
-  let output = null
-  const list$ = useList()
+  const latest = useLatest()
+  const lightSwitches = useMap()
   const createKey = useKeychain('L')
   const add = (power) => {
     const key = createKey()
-    const remove = () => list$.remove(key)
-    const lightSwitch$ = useLightSwitch(power, { key, remove })
-    list$.set(key, lightSwitch$)
+    const remove = () => lightSwitches.delete(key)
+    const lightSwitch = useLightSwitch(power, { key, remove })
+    lightSwitches.set(key, lightSwitch)
   }
-  const toggle = () => {
-    const { isAllOn } = output
+  const toggleAll = () => {
+    const { isAllOn } = latest
     const turn = isAllOn ? 'turnOff' : 'turnOn'
-    list$.value.forEach((light$) => light$[turn]())
+    lightSwitches.forEach((ls) => ls[turn]())
   }
-  const output$ = list$.pipe(
+  const latestValues$ = lightSwitches.latestValues((ls) => ls.latest$)
+  const latest$ = latestValues$.pipe(
     map((list) => {
       const count = list.length
       const onCount = list.filter(({ value }) => value === ON).length
@@ -52,24 +52,29 @@ function useLightSwitches () {
       const isAllOn = onCount === count
       const isAllOff = offCount === count
       return {
-        list, count, onCount, offCount, isAllOn, isAllOff, add
+        list, count, onCount, offCount, isAllOn, isAllOff
       }
     }),
-    tap((v) => { output = v }),
+    latest.update(),
     shareReplay(1)
   )
-  return withProperties(output$, {
-    add: () => add,
-    toggle: () => toggle
-  })
+  return {
+    latest$,
+    get latest () {
+      return latest.value
+    },
+    add,
+    toggleAll
+  }
 }
 
 function useLightSwitch (power = OFF, other = {}) {
+  const latest = useLatest()
   const light$ = new BehaviorSubject(power)
   const toggle = () => light$.next(!light$.value)
   const turnOn = () => light$.next(ON)
   const turnOff = () => light$.next(OFF)
-  const output$ = light$.pipe(
+  const latest$ = light$.pipe(
     distinctUntilChanged(),
     map((value) => ({
       value,
@@ -79,13 +84,19 @@ function useLightSwitch (power = OFF, other = {}) {
       turnOff,
       ...other
     })),
+    latest.update(),
     shareReplay(1)
   )
-  return withProperties(output$, {
-    toggle: () => toggle,
-    turnOn: () => turnOn,
-    turnOff: () => turnOff
-  })
+  return {
+    latest$,
+    get latest () {
+      return latest.value
+    },
+    toggle,
+    turnOn,
+    turnOff,
+    ...other
+  }
 }
 
 function renderRoom (props) {
