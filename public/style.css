@@ -149,8 +149,13 @@ button:focus,
   border-top: calc(1rem/16) solid var(--color-light-gray);
 }
 
-.icon {
+/*
+ * Custom elements
+ */
+
+rui-icon {
   --size: 1.5rem;
+  display: flex;
   fill: none;
   height: var(--size);
   stroke: currentColor;

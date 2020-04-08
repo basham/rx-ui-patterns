@@ -123,25 +123,16 @@ function renderLight (props) {
     <li class='box__row flex'>
       <span class='flex flex--center flex--gap-sm flex-grow'>
         <strong>${id}:</strong>
-        ${renderIcon(icon)}
+        <rui-icon name=${icon} />
         <span>${label}</span>
       </span>
       <span class='flex flex--gap-sm'>
         <button onclick=${toggle}>Toggle</button>
         <button onclick=${remove} class='button button--icon'>
-          ${renderIcon('x')}
+          <rui-icon name='x' />
           <span class='sr-only'>Remove</span>
         </button>
       </span>
     </li>
-  `
-}
-
-function renderIcon (name) {
-  const href = `/icons.svg#${name}`
-  return html`
-    <svg aria-hidden='true' class='icon'>
-      <use href=${href}></use>
-    </svg>
   `
 }

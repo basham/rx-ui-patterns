@@ -1,3 +1,4 @@
+export * from './useAttribute.js'
 export * from './useCallbackStack.js'
 export * from './useIncrementor.js'
 export * from './useLatest.js'
