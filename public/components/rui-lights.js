@@ -1,8 +1,7 @@
-import { BehaviorSubject } from 'rxjs'
 import { map, shareReplay, distinctUntilChanged } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useIncrementor, useLatest, useMap, useSubscribe } from '../util/use.js'
+import { useIncrementor, useLatest, useMap, useMode, useSubscribe } from '../util/use.js'
 
 const ON = true
 const OFF = false
@@ -75,11 +74,11 @@ function useLights () {
 
 function useLight (power = OFF, other = {}) {
   const latest = useLatest()
-  const light$ = new BehaviorSubject(power)
-  const toggle = () => light$.next(!light$.value)
-  const turnOn = () => light$.next(ON)
-  const turnOff = () => light$.next(OFF)
-  const latest$ = light$.pipe(
+  const mode = useMode([OFF, ON], power)
+  const toggle = () => mode.set(mode.value === ON ? OFF : ON)
+  const turnOn = () => mode.set(ON)
+  const turnOff = () => mode.set(OFF)
+  const latest$ = mode.value$.pipe(
     distinctUntilChanged(),
     map((value) => ({
       value,
@@ -140,7 +139,10 @@ function renderLight (props) {
         <span>${label}</span>
       </span>
       <span class='flex flex--gap-sm'>
-        <button onclick=${toggle}>Toggle</button>
+        <button onclick=${toggle}>
+          <rui-icon name=${icon} />
+          <span>${label}</span>
+        </button>
         <button onclick=${remove} class='button button--icon'>
           <rui-icon name='x' />
           <span class='sr-only'>Remove</span>
