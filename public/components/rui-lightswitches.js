@@ -137,8 +137,6 @@ function renderLight (props) {
   `
 }
 
-// https://feathericons.com/
-// https://github.com/feathericons/feather
 function renderIcon (name) {
   const href = `/icons.svg#${name}`
   return html`
