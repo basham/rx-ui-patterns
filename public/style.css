@@ -21,6 +21,10 @@
   outline-offset: calc(2rem/16);
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   background-color: var(--color-lighter-gray);
 }
@@ -103,23 +107,27 @@ button,
 
 button:hover,
 .button:hover {
-  color: var(--color-blue);
+  background-color: var(--color-light-gray);
 }
 
 button:active,
 .button:active {
   background-color: var(--color-light-gray);
-  border-color: var(--color-dark-gray);
-  color: var(--color-black);
 }
 
 .button--icon {
   align-items: center;
+  background-color: transparent;
   border-color: transparent;
   display: flex;
   justify-content: center;
   padding: 0;
   width: calc(40rem/16);
+}
+
+.button--icon:hover {
+  background-color: var(--color-light-gray);
+  border-color: transparent;
 }
 
 .button--icon:active {
@@ -185,8 +193,16 @@ rui-icon {
   flex-grow: 1;
 }
 
-.m-top {
+.m-none {
+  margin: 0;
+}
+
+.m-top-sm {
   margin-top: 1rem;
+}
+
+.m-top-md {
+  margin-top: 2rem;
 }
 
 .width-sm {
