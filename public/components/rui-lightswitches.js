@@ -7,6 +7,11 @@ import { useKeychain, useLatest, useMap, useSubscribe } from '../util/use.js'
 const ON = true
 const OFF = false
 
+const powerIcons = {
+  [ON]: 'sun',
+  [OFF]: 'moon'
+}
+
 const powerLabels = {
   [ON]: 'On',
   [OFF]: 'Off'
@@ -78,6 +83,7 @@ function useLightSwitch (power = OFF, other = {}) {
     distinctUntilChanged(),
     map((value) => ({
       value,
+      icon: powerIcons[value],
       label: powerLabels[value],
       toggle,
       turnOn,
@@ -103,7 +109,7 @@ function renderRoom (props) {
   const { addLight, toggleAll, lights } = props
   return html`
     <h2>Room lights (${lights.onCount}/${lights.count} on)</h2>
-    <div class='group m-top'>
+    <div class='flex flex--gap-sm m-top'>
       <button onclick=${addLight}>Add light</button>
       <button onclick=${toggleAll} hidden=${lights.count ? null : true}>Toggle all</button>
     </div>
@@ -112,11 +118,15 @@ function renderRoom (props) {
 }
 
 function renderLight (props) {
-  const { key, label, remove, toggle } = props
+  const { key, icon, label, remove, toggle } = props
   return html`
-    <li class='box__row flex-space-between'>
-      <span><strong>${key}:</strong> ${label}</span>
-      <span class='group'>
+    <li class='box__row flex'>
+      <span class='flex flex--center flex--gap-sm flex-grow'>
+        <strong>${key}:</strong>
+        ${renderIcon(icon)}
+        <span>${label}</span>
+      </span>
+      <span class='flex flex--gap-sm'>
         <button onclick=${toggle}>Toggle</button>
         <button onclick=${remove} class='button button--icon'>
           ${renderIcon('x')}
@@ -132,7 +142,7 @@ function renderLight (props) {
 function renderIcon (name) {
   const href = `/icons.svg#${name}`
   return html`
-    <svg aria-hidden='true'>
+    <svg aria-hidden='true' class='icon'>
       <use href=${href}></use>
     </svg>
   `

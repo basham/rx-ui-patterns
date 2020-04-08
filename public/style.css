@@ -123,16 +123,6 @@ button:active,
   border-color: transparent;
 }
 
-.button--icon svg {
-  fill: none;
-  height: 24px;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  width: 24px;
-}
-
 button:focus,
 .button:focus {
   border-color: var(--color-blue);
@@ -156,22 +146,34 @@ button:focus,
   border-top: calc(1rem/16) solid var(--color-light-gray);
 }
 
-.group {
-  display: flex;
-}
-
-.group > *:not(:last-child) {
-  margin-right: 0.5rem;
+.icon {
+  fill: none;
+  height: 24px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  width: 24px;
 }
 
 /*
  * Utilities
  */
 
-.flex-space-between {
-  align-items: center;
+.flex {
   display: flex;
-  justify-content: space-between;
+}
+
+.flex--center {
+  align-items: center;
+}
+
+.flex--gap-sm > *:not(:last-child) {
+  margin-right: 0.5rem;
+}
+
+.flex-grow {
+  flex-grow: 1;
 }
 
 .m-top {
