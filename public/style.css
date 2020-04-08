@@ -147,13 +147,14 @@ button:focus,
 }
 
 .icon {
+  --size: 1.5rem;
   fill: none;
-  height: 24px;
+  height: var(--size);
   stroke: currentColor;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  width: 24px;
+  width: var(--size);
 }
 
 /*
