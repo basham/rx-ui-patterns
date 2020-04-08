@@ -169,7 +169,7 @@ button:focus,
   align-items: center;
 }
 
-.flex--gap-sm > *:not(:last-child) {
+.flex--gap-sm > :not(:last-child) {
   margin-right: 0.5rem;
 }
 
