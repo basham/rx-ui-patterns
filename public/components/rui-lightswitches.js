@@ -2,7 +2,7 @@ import { BehaviorSubject } from 'rxjs'
 import { map, shareReplay, distinctUntilChanged } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useKeychain, useLatest, useMap, useSubscribe } from '../util/use.js'
+import { useIncrementor, useLatest, useMap, useSubscribe } from '../util/use.js'
 
 const ON = true
 const OFF = false
@@ -36,12 +36,12 @@ define('rui-lightswitches', (el) => {
 function useLightSwitches () {
   const latest = useLatest()
   const lightSwitches = useMap()
-  const createKey = useKeychain('L')
+  const getId = useIncrementor(1)
   const add = (power) => {
-    const key = createKey()
-    const remove = () => lightSwitches.delete(key)
-    const lightSwitch = useLightSwitch(power, { key, remove })
-    lightSwitches.set(key, lightSwitch)
+    const id = getId()
+    const remove = () => lightSwitches.delete(id)
+    const lightSwitch = useLightSwitch(power, { id, remove })
+    lightSwitches.set(id, lightSwitch)
   }
   const toggleAll = () => {
     const { isAllOn } = latest.value
@@ -118,11 +118,11 @@ function renderRoom (props) {
 }
 
 function renderLight (props) {
-  const { key, icon, label, remove, toggle } = props
+  const { id, icon, label, remove, toggle } = props
   return html`
     <li class='box__row flex'>
       <span class='flex flex--center flex--gap-sm flex-grow'>
-        <strong>${key}:</strong>
+        <strong>${id}:</strong>
         ${renderIcon(icon)}
         <span>${label}</span>
       </span>
