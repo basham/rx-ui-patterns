@@ -39,7 +39,7 @@ function useLightSwitches () {
     lightSwitches.set(key, lightSwitch)
   }
   const toggleAll = () => {
-    const { isAllOn } = latest
+    const { isAllOn } = latest.value
     const turn = isAllOn ? 'turnOff' : 'turnOn'
     lightSwitches.forEach((ls) => ls[turn]())
   }
