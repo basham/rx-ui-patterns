@@ -79,7 +79,7 @@ small {
   font-weight: normal;
 }
 
-input {
+input[type="text"] {
   border: calc(2rem/16) solid var(--color-black);
   line-height: inherit;
   margin-top: 0.5rem;

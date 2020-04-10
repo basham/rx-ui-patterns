@@ -1,7 +1,7 @@
 import { map, shareReplay, distinctUntilChanged } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useBoolean, useIncrementor, useLatest, useMap, useSubscribe } from '../util/use.js'
+import { useBoolean, useIncrementor, useLatest, useMap, useSet, useSubscribe } from '../util/use.js'
 
 const ON = true
 const OFF = false
@@ -36,11 +36,19 @@ function useLights () {
   const latest = useLatest()
   const lights = useMap()
   const getId = useIncrementor(1)
+  const selections = useSet()
+  const selectAll = () => {
+    lights.forEach(({ id }) => selections.add(id))
+  }
+  const unselectAll = () => {
+    selections.clear()
+  }
   const add = (power) => {
     const id = getId()
+    const key = {}
     const label = `Light ${id}`
     const remove = () => lights.delete(id)
-    const light = useLight(power, { id, label, remove })
+    const light = useLight(power, { id, key, label, remove })
     lights.set(id, light)
   }
   const toggleAll = () => {
@@ -69,6 +77,8 @@ function useLights () {
       return latest.value
     },
     add,
+    selectAll,
+    unselectAll,
     toggleAll
   }
 }
@@ -129,10 +139,11 @@ function renderLights (props) {
 }
 
 function renderLight (props) {
-  const { icon, label, remove, toggle, value, valueLabel } = props
-  return html`
+  const { icon, key, label, remove, toggle, value, valueLabel } = props
+  return html.for(key)`
     <li class='box__row flex'>
       <span class='flex flex--center flex--gap-sm flex-grow'>
+        <input type='checkbox' />
         <rui-icon name=${icon} />
         <span>${label}</span>
         <span class='sr-only'>${valueLabel}</span>
