@@ -131,12 +131,13 @@ function renderLights (props) {
 }
 
 function renderLight (props) {
-  const { id, icon, label, remove, toggle, value } = props
+  const { icon, label, remove, toggle, value, valueLabel } = props
   return html`
     <li class='box__row flex'>
       <span class='flex flex--center flex--gap-sm flex-grow'>
-      <rui-icon name=${icon} />
-        <strong>${id}</strong>
+        <rui-icon name=${icon} />
+        <span>${label}</span>
+        <span class='sr-only'>${valueLabel}</span>
       </span>
       <span class='flex flex--center flex--gap-sm'>
         <button
@@ -144,8 +145,12 @@ function renderLight (props) {
           aria-label=${label}
           onclick=${toggle}
           role='switch'>
-          <span data-checked='true'>On</span>
-          <span data-checked='false'>Off</span>
+          <span data-checked='true'>
+            ${powerLabels[ON]}
+          </span>
+          <span data-checked='false'>
+            ${powerLabels[OFF]}
+          </span>
         </button>
         <button
           class='button button--icon'
