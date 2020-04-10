@@ -38,8 +38,9 @@ function useLights () {
   const getId = useIncrementor(1)
   const add = (power) => {
     const id = getId()
+    const label = `Light ${id}`
     const remove = () => lights.delete(id)
-    const light = useLight(power, { id, remove })
+    const light = useLight(power, { id, label, remove })
     lights.set(id, light)
   }
   const toggleAll = () => {
@@ -83,7 +84,7 @@ function useLight (power = OFF, other = {}) {
     map((value) => ({
       value,
       icon: powerIcons[value],
-      label: powerLabels[value],
+      valueLabel: powerLabels[value],
       toggle,
       turnOn,
       turnOff,
@@ -130,22 +131,29 @@ function renderLights (props) {
 }
 
 function renderLight (props) {
-  const { id, icon, label, remove, toggle } = props
+  const { id, icon, label, remove, toggle, value } = props
   return html`
     <li class='box__row flex'>
       <span class='flex flex--center flex--gap-sm flex-grow'>
-        <strong>${id}:</strong>
-        <rui-icon name=${icon} />
-        <span>${label}</span>
+      <rui-icon name=${icon} />
+        <strong>${id}</strong>
       </span>
-      <span class='flex flex--gap-sm'>
-        <button onclick=${toggle}>
-          <rui-icon name=${icon} />
-          <span>${label}</span>
+      <span class='flex flex--center flex--gap-sm'>
+        <button
+          aria-checked=${value === ON}
+          aria-label=${label}
+          onclick=${toggle}
+          role='switch'>
+          <span data-checked='true'>On</span>
+          <span data-checked='false'>Off</span>
         </button>
-        <button onclick=${remove} class='button button--icon'>
+        <button
+          class='button button--icon'
+          onclick=${remove}>
           <rui-icon name='x' />
-          <span class='sr-only'>Remove</span>
+          <span class='sr-only'>
+            ${`Remove ${label}`}
+          </span>
         </button>
       </span>
     </li>

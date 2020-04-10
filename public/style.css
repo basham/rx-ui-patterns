@@ -140,6 +140,24 @@ button:focus,
   outline: none;
 }
 
+button[role="switch"] {
+  background-color: var(--color-light-gray);
+  color: transparent;
+  display: flex;
+  padding: 0 calc(6rem/16);
+}
+
+button[role="switch"] [data-checked] {
+  border-radius: 0.25rem;
+  padding: 0 0.5rem;
+}
+
+button[role="switch"][aria-checked="true"] [data-checked="true"],
+button[role="switch"][aria-checked="false"] [data-checked="false"] {
+  background-color: var(--color-white);
+  color: var(--color-black);
+}
+
 .box:not(:empty) {
   background-color: var(--color-white);
   border: calc(1rem/16) solid var(--color-light-gray);
