@@ -1,7 +1,7 @@
 import { map, shareReplay, distinctUntilChanged } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useIncrementor, useLatest, useMap, useMode, useSubscribe } from '../util/use.js'
+import { useBoolean, useIncrementor, useLatest, useMap, useSubscribe } from '../util/use.js'
 
 const ON = true
 const OFF = false
@@ -75,19 +75,19 @@ function useLights () {
 
 function useLight (power = OFF, other = {}) {
   const latest = useLatest()
-  const mode = useMode([OFF, ON], power)
-  const toggle = () => mode.set(mode.value === ON ? OFF : ON)
-  const turnOn = () => mode.set(ON)
-  const turnOff = () => mode.set(OFF)
-  const latest$ = mode.value$.pipe(
+  const powered = useBoolean(power)
+  const methods = {
+    toggle: powered.toggle,
+    turnOn: powered.toTrue,
+    turnOff: powered.toFalse
+  }
+  const latest$ = powered.value$.pipe(
     distinctUntilChanged(),
     map((value) => ({
       value,
       icon: powerIcons[value],
       valueLabel: powerLabels[value],
-      toggle,
-      turnOn,
-      turnOff,
+      ...methods,
       ...other
     })),
     latest.update(),
@@ -98,9 +98,7 @@ function useLight (power = OFF, other = {}) {
     get latest () {
       return latest.value
     },
-    toggle,
-    turnOn,
-    turnOff,
+    ...methods,
     ...other
   }
 }
