@@ -86,15 +86,14 @@ function useLights (el) {
   )
   const latest$ = combineLatest(
     latestValues$,
-    selections.values$
+    selections.size$
   ).pipe(
-    map(([list, selections]) => {
+    map(([list, selectedCount]) => {
       const count = list.length
       const onCount = list.filter(({ value }) => value === ON).length
       const offCount = list.filter(({ value }) => value === OFF).length
       const isAllOn = onCount === count
       const isAllOff = offCount === count
-      const selectedCount = selections.length
       const hasSelections = selectedCount > 0
       const isAllSelected = selectedCount === count
       return {
