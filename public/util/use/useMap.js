@@ -42,17 +42,23 @@ export function useMap () {
     shareReplay(1)
   )
   return {
+    get entries () {
+      return entries()
+    },
+    get keys () {
+      return keys()
+    },
     get size () {
       return source.size
     },
+    get values () {
+      return values()
+    },
     clear,
     delete: del,
-    entries,
     get,
     has,
-    keys,
     set,
-    values,
     entries$,
     keys$,
     size$,

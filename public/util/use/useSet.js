@@ -31,10 +31,12 @@ export function useSet () {
     get size () {
       return source.size
     },
+    get values () {
+      return values()
+    },
     add,
     clear,
     delete: del,
-    values,
     size$,
     values$
   }

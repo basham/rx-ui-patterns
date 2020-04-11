@@ -42,21 +42,22 @@ function useLights (el) {
   const idCounter = useInt()
   const getId = () => idCounter.increment()
   const selections = useSet()
+  const getCheckbox = (id) => el.querySelector(`input[type="checkbox"][value="${id}"]`)
   const selectAll = () => {
-    const ids = lights.values().map(({ id }) => id)
+    const ids = lights.values.map(({ id }) => id)
     ids.forEach((id) => {
-      el.querySelector(`input[type="checkbox"][value="${id}"]`).checked = true
+      getCheckbox(id).checked = true
     })
     selections.add(...ids)
   }
   const deselectAll = () => {
-    selections.values().forEach((id) => {
-      el.querySelector(`input[type="checkbox"][value="${id}"]`).checked = false
+    selections.values.forEach((id) => {
+      getCheckbox(id).checked = false
     })
     selections.clear()
   }
   const removeSelected = () => {
-    selections.values().forEach((id) => lights.delete(id))
+    selections.values.forEach((id) => lights.delete(id))
     selections.clear()
   }
   const add = (power) => {
@@ -77,7 +78,7 @@ function useLights (el) {
   const toggleAll = () => {
     const { isAllOn } = latest.value
     const turn = isAllOn ? 'turnOff' : 'turnOn'
-    lights.values().forEach((light) => light[turn]())
+    lights.values.forEach((light) => light[turn]())
   }
   const latestValues$ = lights.values$.pipe(
     switchMap((lights) => {
