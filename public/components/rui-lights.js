@@ -152,10 +152,10 @@ function renderLights (props) {
   return html`
     <h2>Lights</h2>
     <p class='m-none'>
-      <span hidden=${hide(hasSelections)}>
+      <span hidden=${boolAttr(hasSelections)}>
         ${onCount}/${count} ${powerLabels[ON]}
       </span>
-      <span hidden=${hide(!hasSelections)}>
+      <span hidden=${boolAttr(!hasSelections)}>
         ${selectedCount}/${count} selected
       </span>
     </p>
@@ -164,24 +164,22 @@ function renderLights (props) {
         Add
       </button>
       <button
-        hidden=${hide(!count)}
+        hidden=${boolAttr(!count)}
         onclick=${isAllSelected ? deselectAll : selectAll}>
         ${isAllSelected ? 'Deselect all' : 'Select all'}
       </button>
       <button
-        hidden=${hide(!hasSelections)}
+        hidden=${boolAttr(!hasSelections)}
         onclick=${removeSelected}>
         Remove
       </button>
       <button
-        hidden=${hide(hasSelections || !count)}
+        hidden=${boolAttr(hasSelections || !count)}
         onclick=${toggleAll}>
         Toggle
       </button>
     </div>
-    <ol class='box width-sm'>
-      ${lights.all.map(renderLight)}
-    </ol>
+    <ol class='box width-sm'>${lights.all.map(renderLight)}</ol>
   `
 }
 
@@ -224,6 +222,6 @@ function renderLight (props) {
   `
 }
 
-function hide (h) {
+function boolAttr (h) {
   return h ? true : null
 }
