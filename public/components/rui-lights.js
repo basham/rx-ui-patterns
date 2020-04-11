@@ -27,7 +27,7 @@ define('rui-lights', (el) => {
     deselectAll: lights.deselectAll,
     removeSelected: lights.removeSelected,
     toggleAll: lights.toggleAll,
-    lights: lights.latest$
+    lights: lights.value$
   })
   const render$ = props$.pipe(
     renderComponent(el, renderLights)
@@ -65,12 +65,9 @@ function useLights (el) {
     const key = {}
     const label = `Light ${id}`
     const select = (e) => {
-      const selected = e.target.checked
-      if (selected) {
-        selections.add(id)
-      } else {
-        selections.delete(id)
-      }
+      const { checked } = e.target
+      const method = checked ? 'add' : 'delete'
+      selections[method](id)
     }
     const light = useLight(power, { id, key, label, select })
     lights.set(id, light)
@@ -80,41 +77,41 @@ function useLights (el) {
     const turn = isAllOn ? 'turnOff' : 'turnOn'
     lights.values.forEach((light) => light[turn]())
   }
-  const latestValues$ = lights.values$.pipe(
+  const lights$ = lights.values$.pipe(
     switchMap((lights) => {
-      const values = lights.map((light) => light.latest$)
+      const values = lights.map((light) => light.value$)
       return values.length ? combineLatest(values) : of([])
     })
   )
-  const latest$ = combineLatest(
-    latestValues$,
+  const value$ = combineLatest(
+    lights$,
     selections.size$
   ).pipe(
-    map(([list, selectedCount]) => {
-      const count = list.length
-      const onCount = list.filter(({ value }) => value === ON).length
-      const offCount = list.filter(({ value }) => value === OFF).length
+    map(([all, selectedCount]) => {
+      const count = all.length
+      const onCount = all.filter(({ value }) => value === ON).length
+      const offCount = all.filter(({ value }) => value === OFF).length
       const isAllOn = onCount === count
       const isAllOff = offCount === count
       const hasSelections = selectedCount > 0
       const isAllSelected = selectedCount === count
       return {
-        list, count, onCount, offCount, isAllOn, isAllOff, selectedCount, hasSelections, isAllSelected
+        all, count, onCount, offCount, isAllOn, isAllOff, selectedCount, hasSelections, isAllSelected
       }
     }),
     latest.update(),
     shareReplay(1)
   )
   return {
-    latest$,
-    get latest () {
+    get value () {
       return latest.value
     },
     add,
     selectAll,
     deselectAll,
     removeSelected,
-    toggleAll
+    toggleAll,
+    value$
   }
 }
 
@@ -126,25 +123,25 @@ function useLight (power = OFF, other = {}) {
     turnOn: powered.toTrue,
     turnOff: powered.toFalse
   }
-  const latest$ = powered.value$.pipe(
+  const value$ = powered.value$.pipe(
     distinctUntilChanged(),
     map((value) => ({
+      ...other,
+      ...methods,
       value,
       icon: powerIcons[value],
-      valueLabel: powerLabels[value],
-      ...methods,
-      ...other
+      valueLabel: powerLabels[value]
     })),
     latest.update(),
     shareReplay(1)
   )
   return {
-    latest$,
-    get latest () {
+    ...other,
+    ...methods,
+    get value () {
       return latest.value
     },
-    ...methods,
-    ...other
+    value$
   }
 }
 
@@ -176,7 +173,7 @@ function renderLights (props) {
         Toggle
       </button>
     </div>
-    <ol class='box width-sm'>${lights.list.map(renderLight)}</ol>
+    <ol class='box width-sm'>${lights.all.map(renderLight)}</ol>
   `
 }
 
