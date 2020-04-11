@@ -42,18 +42,11 @@ function useLights (el) {
   const idCounter = useInt()
   const getId = () => idCounter.increment()
   const selections = useSet()
-  const getCheckbox = (id) => el.querySelector(`input[type="checkbox"][value="${id}"]`)
   const selectAll = () => {
     const ids = lights.values.map(({ id }) => id)
-    ids.forEach((id) => {
-      getCheckbox(id).checked = true
-    })
     selections.add(...ids)
   }
   const deselectAll = () => {
-    selections.values.forEach((id) => {
-      getCheckbox(id).checked = false
-    })
     selections.clear()
   }
   const removeSelected = () => {
@@ -85,18 +78,23 @@ function useLights (el) {
   )
   const value$ = combineLatest(
     lights$,
-    selections.size$
+    selections.values$
   ).pipe(
-    map(([all, selectedCount]) => {
+    map(([all, selected]) => {
       const count = all.length
       const onCount = all.filter(({ value }) => value === ON).length
       const offCount = all.filter(({ value }) => value === OFF).length
       const isAllOn = onCount === count
       const isAllOff = offCount === count
+      const selectedCount = selected.length
       const hasSelections = selectedCount > 0
       const isAllSelected = selectedCount === count
+      const _all = all.map((light) => ({
+        ...light,
+        selected: selected.includes(light.id)
+      }))
       return {
-        all, count, onCount, offCount, isAllOn, isAllOff, selectedCount, hasSelections, isAllSelected
+        all: _all, count, onCount, offCount, isAllOn, isAllOff, selectedCount, hasSelections, isAllSelected
       }
     }),
     latest.update(),
@@ -152,10 +150,10 @@ function renderLights (props) {
   return html`
     <h2>Lights</h2>
     <p class='m-none'>
-      <span hidden=${boolAttr(hasSelections)}>
+      <span .hidden=${hasSelections}>
         ${onCount}/${count} ${powerLabels[ON]}
       </span>
-      <span hidden=${boolAttr(!hasSelections)}>
+      <span .hidden=${!hasSelections}>
         ${selectedCount}/${count} selected
       </span>
     </p>
@@ -164,17 +162,17 @@ function renderLights (props) {
         Add
       </button>
       <button
-        hidden=${boolAttr(!count)}
+        .hidden=${!count}
         onclick=${isAllSelected ? deselectAll : selectAll}>
         ${isAllSelected ? 'Deselect all' : 'Select all'}
       </button>
       <button
-        hidden=${boolAttr(!hasSelections)}
+        .hidden=${!hasSelections}
         onclick=${removeSelected}>
         Remove
       </button>
       <button
-        hidden=${boolAttr(hasSelections || !count)}
+        .hidden=${hasSelections || !count}
         onclick=${toggleAll}>
         Toggle
       </button>
@@ -184,12 +182,13 @@ function renderLights (props) {
 }
 
 function renderLight (props) {
-  const { icon, id, key, label, select, toggle, value, valueLabel } = props
+  const { icon, id, key, label, select, selected, toggle, value, valueLabel } = props
   const checkboxId = `select-light-${id}`
   return html.for(key)`
     <li class='box__row flex'>
       <span class='flex flex--center flex--gap-sm flex-grow'>
         <input
+          .checked=${selected}
           class='sr-only'
           id=${checkboxId}
           onchange=${select}
@@ -220,8 +219,4 @@ function renderLight (props) {
       </span>
     </li>
   `
-}
-
-function boolAttr (h) {
-  return h ? true : null
 }
