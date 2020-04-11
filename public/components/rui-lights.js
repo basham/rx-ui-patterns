@@ -80,21 +80,21 @@ function useLights (el) {
     lights$,
     selections.values$
   ).pipe(
-    map(([all, selected]) => {
-      const count = all.length
-      const onCount = all.filter(({ value }) => value === ON).length
-      const offCount = all.filter(({ value }) => value === OFF).length
+    map(([lights, selected]) => {
+      const count = lights.length
+      const onCount = lights.filter(({ value }) => value === ON).length
+      const offCount = lights.filter(({ value }) => value === OFF).length
       const isAllOn = onCount === count
       const isAllOff = offCount === count
       const selectedCount = selected.length
       const hasSelections = selectedCount > 0
       const isAllSelected = selectedCount === count
-      const _all = all.map((light) => ({
+      const all = lights.map((light) => ({
         ...light,
         selected: selected.includes(light.id)
       }))
       return {
-        all: _all, count, onCount, offCount, isAllOn, isAllOff, selectedCount, hasSelections, isAllSelected
+        all, count, onCount, offCount, isAllOn, isAllOff, selectedCount, hasSelections, isAllSelected
       }
     }),
     latest.update(),
