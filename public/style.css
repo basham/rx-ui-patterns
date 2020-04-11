@@ -91,6 +91,7 @@ button,
   color: var(--color-black);
   cursor: pointer;
   display: inline-block;
+  flex-shrink: 0;
   font-weight: bold;
   height: calc(40rem/16);
   line-height: inherit;
