@@ -67,12 +67,6 @@ li {
   margin: 1rem 0 0;
 }
 
-label {
-  display: block;
-  font-weight: bold;
-  margin-top: 1rem;
-}
-
 small {
   color: var(--color-dark-gray);
   display: block;
@@ -107,7 +101,7 @@ button,
 
 button:hover,
 .button:hover {
-  background-color: var(--color-light-gray);
+  background-color: var(--color-lighter-gray);
 }
 
 button:active,
@@ -158,6 +152,48 @@ button[role="switch"][aria-checked="false"] [data-checked="false"] {
   color: var(--color-black);
 }
 
+input[type="checkbox"] + label {
+  cursor: pointer;
+}
+
+input[type="checkbox"] + label [data-checkbox] {
+  background-color: var(--color-white);
+  border: calc(2rem/16) solid var(--color-light-gray);
+  border-radius: 0.25rem;
+  box-sizing: content-box;
+  border-radius: 0.25rem;
+  color: transparent;
+  margin-right: 0.75rem;
+}
+
+input[type="checkbox"]:hover + label [data-checkbox] {
+  background-color: var(--color-lighter-gray);
+}
+
+input[type="checkbox"]:focus + label [data-checkbox] {
+  border-color: var(--color-blue);
+}
+
+input[type="checkbox"]:active + label [data-checkbox] {
+  background-color: var(--color-light-gray);
+  border-color: var(--color-blue);
+}
+
+input[type="checkbox"]:checked + label [data-checkbox] {
+  background-color: var(--color-black);
+  border-color: var(--color-black);
+  color: var(--color-white);
+}
+
+input[type="checkbox"]:checked:focus + label [data-checkbox] {
+  border-color: var(--color-blue);
+}
+
+input[type="checkbox"]:checked:active + label [data-checkbox] {
+  border-color: var(--color-blue);
+  color: var(--color-light-gray);
+}
+
 .box:not(:empty) {
   background-color: var(--color-white);
   border: calc(1rem/16) solid var(--color-light-gray);
@@ -205,6 +241,10 @@ rui-icon {
 
 .flex--gap-sm > :not(:last-child) {
   margin-right: 0.5rem;
+}
+
+.flex--gap-md > :not(:last-child) {
+  margin-right: 1rem;
 }
 
 .flex-grow {

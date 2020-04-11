@@ -5,6 +5,9 @@
 -->
 <svg xmlns="http://www.w3.org/2000/svg">
   <defs>
+    <symbol id="check" viewBox="0 0 24 24">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </symbol>
     <symbol id="moon" viewBox="0 0 24 24">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
     </symbol>

@@ -1,39 +1,41 @@
-import { BehaviorSubject, combineLatest, of } from 'rxjs'
-import { shareReplay, switchMap } from 'rxjs/operators'
-import { withProperties } from '../with.js'
+import { BehaviorSubject } from 'rxjs'
+import { distinctUntilChanged, map, shareReplay } from 'rxjs/operators'
 
 export function useSet () {
   const source = new Set()
   const source$ = new BehaviorSubject(source)
-  const add = () => (value) => {
-    const r = source.add(value)
-    source$.next(source)
-    return r
+  const update = () => source$.next(source)
+  const add = (...values) => {
+    values.forEach((value) => source.add(value))
+    update()
   }
-  const _delete = () => (key) => {
-    const r = source.delete(key)
-    if (r) {
-      source$.next(source)
-    }
-    return r
+  const clear = () => {
+    source.clear()
+    update()
   }
-  const forEach = () => (...args) => source.forEach(...args)
-  const _source$ = () => source$
-  const latestValues = () => (selector = (value) => value) => source$.pipe(
-    // Every time a value is added or removed,
-    // watch for changes for all the values.
-    switchMap((m) => {
-      const values = [...m.values()].map(selector)
-      return values.length ? combineLatest(values) : of([])
-    }),
+  const del = (...values) => {
+    values.forEach((value) => source.delete(value))
+    update()
+  }
+  const values = () => [...source.values()]
+  const size$ = source$.pipe(
+    map(() => source.size),
+    distinctUntilChanged(),
     shareReplay(1)
   )
-  return withProperties(source, {
-    value$: source$.asObservable(),
-    source$: _source$,
+  const values$ = source$.pipe(
+    map(() => values()),
+    shareReplay(1)
+  )
+  return {
+    get size () {
+      return source.size
+    },
     add,
-    delete: _delete,
-    forEach,
-    latestValues
-  })
+    clear,
+    delete: del,
+    values,
+    size$,
+    values$
+  }
 }

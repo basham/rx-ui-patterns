@@ -1,4 +1,5 @@
-import { map, shareReplay, distinctUntilChanged } from 'rxjs/operators'
+import { combineLatest, of } from 'rxjs'
+import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
 import { useBoolean, useIncrementor, useLatest, useMap, useSet, useSubscribe } from '../util/use.js'
@@ -18,10 +19,13 @@ const powerLabels = {
 
 define('rui-lights', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const lights = useLights()
+  const lights = useLights(el)
   lights.add(ON)
   const props$ = combineLatestObject({
     addLight: () => lights.add(OFF),
+    selectAll: lights.selectAll,
+    deselectAll: lights.deselectAll,
+    removeSelected: lights.removeSelected,
     toggleAll: lights.toggleAll,
     lights: lights.latest$
   })
@@ -32,40 +36,69 @@ define('rui-lights', (el) => {
   return unsubscribe
 })
 
-function useLights () {
+function useLights (el) {
   const latest = useLatest()
   const lights = useMap()
   const getId = useIncrementor(1)
   const selections = useSet()
   const selectAll = () => {
-    lights.forEach(({ id }) => selections.add(id))
+    const ids = lights.values().map(({ id }) => id)
+    ids.forEach((id) => {
+      el.querySelector(`input[type="checkbox"][value="${id}"]`).checked = true
+    })
+    selections.add(...ids)
   }
-  const unselectAll = () => {
+  const deselectAll = () => {
+    selections.values().forEach((id) => {
+      el.querySelector(`input[type="checkbox"][value="${id}"]`).checked = false
+    })
+    selections.clear()
+  }
+  const removeSelected = () => {
+    selections.values().forEach((id) => lights.delete(id))
     selections.clear()
   }
   const add = (power) => {
     const id = getId()
     const key = {}
     const label = `Light ${id}`
-    const remove = () => lights.delete(id)
-    const light = useLight(power, { id, key, label, remove })
+    const select = (e) => {
+      const selected = e.target.checked
+      if (selected) {
+        selections.add(id)
+      } else {
+        selections.delete(id)
+      }
+    }
+    const light = useLight(power, { id, key, label, select })
     lights.set(id, light)
   }
   const toggleAll = () => {
     const { isAllOn } = latest.value
     const turn = isAllOn ? 'turnOff' : 'turnOn'
-    lights.forEach((light) => light[turn]())
+    lights.values().forEach((light) => light[turn]())
   }
-  const latestValues$ = lights.latestValues((light) => light.latest$)
-  const latest$ = latestValues$.pipe(
-    map((list) => {
+  const latestValues$ = lights.values$.pipe(
+    switchMap((lights) => {
+      const values = lights.map((light) => light.latest$)
+      return values.length ? combineLatest(values) : of([])
+    })
+  )
+  const latest$ = combineLatest(
+    latestValues$,
+    selections.values$
+  ).pipe(
+    map(([list, selections]) => {
       const count = list.length
       const onCount = list.filter(({ value }) => value === ON).length
       const offCount = list.filter(({ value }) => value === OFF).length
       const isAllOn = onCount === count
       const isAllOff = offCount === count
+      const selectedCount = selections.length
+      const hasSelections = selectedCount > 0
+      const isAllSelected = selectedCount === count
       return {
-        list, count, onCount, offCount, isAllOn, isAllOff
+        list, count, onCount, offCount, isAllOn, isAllOff, selectedCount, hasSelections, isAllSelected
       }
     }),
     latest.update(),
@@ -78,7 +111,8 @@ function useLights () {
     },
     add,
     selectAll,
-    unselectAll,
+    deselectAll,
+    removeSelected,
     toggleAll
   }
 }
@@ -114,39 +148,50 @@ function useLight (power = OFF, other = {}) {
 }
 
 function renderLights (props) {
-  const { addLight, toggleAll, lights } = props
-  const hideIfNoLights = lights.count ? null : true
+  const { addLight, selectAll, deselectAll, removeSelected, toggleAll, lights } = props
+  const { count, onCount } = lights
+  const { selectedCount, hasSelections, isAllSelected } = lights
   return html`
-    <div class='flex flex--center width-sm m-top-md'>
-      <div class='flex flex--center flex--gap-sm flex-grow'>
-        <h2 class='m-none'>Lights</h2>
-        <p class='m-none' hidden=${hideIfNoLights}>
-          ${lights.onCount}/${lights.count} ${powerLabels[ON]}
-        </p>
-      </div>
-      <div class='flex flex--center flex--gap-sm'>
-        <button onclick=${toggleAll} hidden=${hideIfNoLights}>
-          Toggle all
-        </button>
-        <button onclick=${addLight} class='button button--icon'>
-          <rui-icon name='plus' />
-          <span class='sr-only'>Add light</span>
-        </button>
-      </div>
+    <h2>Lights</h2>
+    <p class='m-none'>
+      <span hidden=${hide(hasSelections)}>
+        ${onCount}/${count} ${powerLabels[ON]}
+      </span>
+      <span hidden=${hide(!hasSelections)}>
+        ${selectedCount}/${count} selected
+      </span>
+    </p>
+    <div class='flex flex--gap-sm m-top-sm'>
+      <button onclick=${addLight}>
+        Add
+      </button>
+      <button onclick=${isAllSelected ? deselectAll : selectAll} hidden=${hide(!count)}>
+        ${isAllSelected ? 'Deselect all' : 'Select all'}
+      </button>
+      <button onclick=${removeSelected} hidden=${hide(!hasSelections)}>
+        Remove
+      </button>
+      <button onclick=${toggleAll} hidden=${hide(hasSelections || !count)}>
+        Toggle
+      </button>
     </div>
     <ol class='box width-sm'>${lights.list.map(renderLight)}</ol>
   `
 }
 
 function renderLight (props) {
-  const { icon, key, label, remove, toggle, value, valueLabel } = props
+  const { icon, id, key, label, select, toggle, value, valueLabel } = props
+  const checkboxId = `select-light-${id}`
   return html.for(key)`
     <li class='box__row flex'>
       <span class='flex flex--center flex--gap-sm flex-grow'>
-        <input type='checkbox' />
-        <rui-icon name=${icon} />
-        <span>${label}</span>
-        <span class='sr-only'>${valueLabel}</span>
+        <input id=${checkboxId} type='checkbox' onchange=${select} value=${id} class='sr-only' />
+        <label for=${checkboxId} class='flex flex--center flex--gap-sm'>
+          <rui-icon name='check' data-checkbox />
+          <rui-icon name=${icon} />
+          <span>${label}</span>
+          <span class='sr-only'>${valueLabel}</span>
+        </label>
       </span>
       <span class='flex flex--center flex--gap-sm'>
         <button
@@ -161,15 +206,11 @@ function renderLight (props) {
             ${powerLabels[OFF]}
           </span>
         </button>
-        <button
-          class='button button--icon'
-          onclick=${remove}>
-          <rui-icon name='x' />
-          <span class='sr-only'>
-            ${`Remove ${label}`}
-          </span>
-        </button>
       </span>
     </li>
   `
+}
+
+function hide (h) {
+  return h ? true : null
 }
