@@ -2,7 +2,7 @@ import { combineLatest, of } from 'rxjs'
 import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useBoolean, useIncrementor, useLatest, useMap, useSet, useSubscribe } from '../util/use.js'
+import { useBoolean, useInt, useLatest, useMap, useSet, useSubscribe } from '../util/use.js'
 
 const ON = true
 const OFF = false
@@ -39,7 +39,8 @@ define('rui-lights', (el) => {
 function useLights (el) {
   const latest = useLatest()
   const lights = useMap()
-  const getId = useIncrementor(1)
+  const idCounter = useInt()
+  const getId = () => idCounter.increment()
   const selections = useSet()
   const selectAll = () => {
     const ids = lights.values().map(({ id }) => id)

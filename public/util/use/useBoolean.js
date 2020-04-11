@@ -1,26 +1,26 @@
 import { BehaviorSubject } from 'rxjs'
 
 export function useBoolean (initValue = false) {
-  const value$ = new BehaviorSubject(!!initValue)
-  const get = () => value$.value
-  const toggle = () => set(!get())
+  let source = !!initValue
+  const source$ = new BehaviorSubject(source)
+  const update = () => source$.next(source)
+  const toggle = () => set(!source)
   const toFalse = () => set(false)
   const toTrue = () => set(true)
   const set = (value) => {
-    value$.next(!!value)
+    source = !!value
+    update()
   }
   return {
-    value$: value$.asObservable(),
     get value () {
-      return get()
+      return source
     },
     set value (value) {
       return set(value)
     },
-    get,
-    set,
     toggle,
     toFalse,
-    toTrue
+    toTrue,
+    value$: source$.asObservable()
   }
 }
