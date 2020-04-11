@@ -163,17 +163,25 @@ function renderLights (props) {
       <button onclick=${addLight}>
         Add
       </button>
-      <button onclick=${isAllSelected ? deselectAll : selectAll} hidden=${hide(!count)}>
+      <button
+        hidden=${hide(!count)}
+        onclick=${isAllSelected ? deselectAll : selectAll}>
         ${isAllSelected ? 'Deselect all' : 'Select all'}
       </button>
-      <button onclick=${removeSelected} hidden=${hide(!hasSelections)}>
+      <button
+        hidden=${hide(!hasSelections)}
+        onclick=${removeSelected}>
         Remove
       </button>
-      <button onclick=${toggleAll} hidden=${hide(hasSelections || !count)}>
+      <button
+        hidden=${hide(hasSelections || !count)}
+        onclick=${toggleAll}>
         Toggle
       </button>
     </div>
-    <ol class='box width-sm'>${lights.all.map(renderLight)}</ol>
+    <ol class='box width-sm'>
+      ${lights.all.map(renderLight)}
+    </ol>
   `
 }
 
@@ -183,8 +191,15 @@ function renderLight (props) {
   return html.for(key)`
     <li class='box__row flex'>
       <span class='flex flex--center flex--gap-sm flex-grow'>
-        <input id=${checkboxId} type='checkbox' onchange=${select} value=${id} class='sr-only' />
-        <label for=${checkboxId} class='flex flex--center flex--gap-sm'>
+        <input
+          class='sr-only'
+          id=${checkboxId}
+          onchange=${select}
+          type='checkbox'
+          value=${id} />
+        <label
+          class='flex flex--center flex--gap-sm'
+          for=${checkboxId}>
           <rui-icon name='check' data-checkbox />
           <rui-icon name=${icon} />
           <span>${label}</span>
