@@ -17,7 +17,7 @@
 }
 
 :focus {
-  outline: calc(3rem/16) solid var(--color-blue);
+  outline: calc(2rem/16) solid var(--color-blue);
   outline-offset: calc(2rem/16);
 }
 
@@ -58,7 +58,9 @@ h2 {
 }
 
 ol,
-ul {
+ul,
+dl,
+dd {
   margin: 0;
   padding: 0;
 }
@@ -67,19 +69,35 @@ li {
   margin: 1rem 0 0;
 }
 
+dt {
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
 small {
   color: var(--color-dark-gray);
   display: block;
   font-weight: normal;
 }
 
+label {
+  display: block;
+  font-weight: bold;
+}
+
 input[type="text"] {
-  border: calc(2rem/16) solid var(--color-black);
+  border: calc(2rem/16) solid var(--color-light-gray);
+  border-radius: 0.25rem;
   line-height: inherit;
   margin-top: 0.5rem;
   max-width: 12rem;
   padding: 0.5rem;
   width: 100%;
+}
+
+input:focus {
+  border-color: var(--color-blue);
+  outline: none;
 }
 
 button,
@@ -129,7 +147,7 @@ button:active,
   border-color: transparent;
 }
 
-button:focus,
+button:not(.link):focus,
 .button:focus {
   border-color: var(--color-blue);
   outline: none;
@@ -151,6 +169,20 @@ button[role="switch"][aria-checked="true"] [data-checked="true"],
 button[role="switch"][aria-checked="false"] [data-checked="false"] {
   background-color: var(--color-white);
   color: var(--color-black);
+}
+
+.link {
+  background-color: transparent;
+  border: none;
+  color: var(--color-blue);
+  font-weight: normal;
+  height: auto;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.link:active {
+  background-color: transparent;
 }
 
 input[type="checkbox"] + label {
