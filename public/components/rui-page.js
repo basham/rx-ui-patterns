@@ -23,7 +23,7 @@ define('rui-page', {
     this.html`
       <header role='banner'>
         <div class='content'>
-          <a href='?'>${TITLE}</a>
+          <a href='/'>${TITLE}</a>
         </div>
       </header>
       <main class='content'>
