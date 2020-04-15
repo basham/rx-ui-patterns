@@ -35,13 +35,15 @@ const renderMap = {
 
 function renderForm (props) {
   const { mode } = props
-  return renderMap[mode](props)
+  return html`
+    <h1>Form</h1>
+    ${renderMap[mode](props)}
+  `
 }
 
 function renderIdle (props) {
   const { editMode } = props
   return html`
-    <h2>Form</h2>
     <dl>
       <dt>Profile</dt>
       <dd>Chris</dd>
