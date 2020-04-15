@@ -28,7 +28,7 @@
   "dependencies": {
     "es-module-shims": "0.4.6",
     "rxjs": "6.5.5",
-    "uce": "0.8.1"
+    "uce": "0.9.0"
   },
   "snowpack": {
     "webDependencies": [
