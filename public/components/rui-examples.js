@@ -1,4 +1,4 @@
-import { define } from 'uce'
+import { define } from '/web_modules/uce.js'
 
 define('rui-examples', {
   connected () {

@@ -1,5 +1,5 @@
-import { combineLatest, isObservable, of } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { combineLatest, isObservable, of } from '/web_modules/rxjs.js'
+import { map } from '/web_modules/rxjs/operators.js'
 
 export const combineLatestObject = (source) => {
   const streamKeys = Object.keys(source)

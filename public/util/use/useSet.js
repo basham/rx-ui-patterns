@@ -1,5 +1,5 @@
-import { BehaviorSubject } from 'rxjs'
-import { distinctUntilChanged, map, shareReplay } from 'rxjs/operators'
+import { BehaviorSubject } from '/web_modules/rxjs.js'
+import { distinctUntilChanged, map, shareReplay } from '/web_modules/rxjs/operators.js'
 
 export function useSet () {
   const source = new Set()

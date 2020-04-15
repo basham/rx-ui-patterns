@@ -1,4 +1,4 @@
-import { tap } from 'rxjs/operators'
+import { tap } from '/web_modules/rxjs/operators.js'
 
 // Operator for pushing the current value of a stream to a Subject.
 // Equivalent effect of: source$.subscribe(subject$)

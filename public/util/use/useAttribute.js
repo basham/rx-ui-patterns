@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject } from '/web_modules/rxjs.js'
 
 export function useAttribute (target, name) {
   const getValue = () => target.getAttribute(name)

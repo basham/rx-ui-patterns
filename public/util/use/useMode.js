@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject } from '/web_modules/rxjs.js'
 
 export function useMode (modes, initMode) {
   if (!Array.isArray(modes)) {

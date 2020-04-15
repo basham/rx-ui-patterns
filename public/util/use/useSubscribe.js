@@ -1,4 +1,4 @@
-import { Subscription, isObservable } from 'rxjs'
+import { Subscription, isObservable } from '/web_modules/rxjs.js'
 import { useCallbackStack } from './useCallbackStack.js'
 
 export function useSubscribe () {

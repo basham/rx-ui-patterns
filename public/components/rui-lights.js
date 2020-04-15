@@ -1,5 +1,5 @@
-import { combineLatest, of } from 'rxjs'
-import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators'
+import { combineLatest, of } from '/web_modules/rxjs.js'
+import { distinctUntilChanged, map, shareReplay, switchMap } from '/web_modules/rxjs/operators.js'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
 import { useBoolean, useInt, useLatest, useMap, useSet, useSubscribe } from '../util/use.js'

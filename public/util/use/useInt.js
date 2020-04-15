@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject } from '/web_modules/rxjs.js'
 
 export function useInt (initValue = 0) {
   let source = isNaN(parseInt(initValue)) ? 0 : parseInt(initValue)

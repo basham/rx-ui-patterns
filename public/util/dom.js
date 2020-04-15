@@ -1,7 +1,7 @@
-import { define as _define } from 'uce'
+import { define as _define } from '/web_modules/uce.js'
 import { renderComponentFactory } from './rx/renderComponentFactory.js'
 
-export * from 'uce'
+export * from '/web_modules/uce.js'
 
 export function define (name, def, other = {}) {
   _define(name, {
