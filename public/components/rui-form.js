@@ -1,16 +1,14 @@
-import { BehaviorSubject } from 'rxjs'
-import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useBoolean, useMode, useSubscribe } from '../util/use.js'
+import { useMode, useSubscribe } from '../util/use.js'
 
 define('rui-form', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const field = useField()
+  const form = useForm()
   const props$ = combineLatestObject({
-    mode: field.mode$,
-    idleMode: field.idleMode,
-    editMode: field.editMode
+    mode: form.mode$,
+    idleMode: form.idleMode,
+    editMode: form.editMode
   })
   const render$ = props$.pipe(
     renderComponent(el, renderForm)
@@ -19,7 +17,7 @@ define('rui-form', (el) => {
   return unsubscribe
 })
 
-function useField () {
+function useForm () {
   const mode = useMode(['idle', 'edit'])
   const idleMode = () => mode.set('idle')
   const editMode = () => mode.set('edit')
@@ -45,8 +43,9 @@ function renderIdle (props) {
   return html`
     <h2>Form</h2>
     <dl>
-      <dt>Name</dt>
+      <dt>Profile</dt>
       <dd>Chris</dd>
+      <dd>chris@example.com</dd>
       <dd>
         <button
           class='link'
@@ -72,6 +71,14 @@ function renderEdit (props) {
         <input
           id='name-input'
           type='text' />
+      </div>
+      <div class='m-top-sm'>
+        <label for='email-input'>
+          Email
+        </label>
+        <input
+          id='email-input'
+          type='email' />
       </div>
       <div class='flex flex--gap-sm m-top-sm'>
         <button type='submit'>Save</button>

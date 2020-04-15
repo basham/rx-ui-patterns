@@ -85,6 +85,7 @@ label {
   font-weight: bold;
 }
 
+input[type="email"],
 input[type="text"] {
   border: calc(2rem/16) solid var(--color-light-gray);
   border-radius: 0.25rem;
