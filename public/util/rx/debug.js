@@ -1,4 +1,4 @@
-import { tap } from '/web_modules/rxjs/operators.js'
+import { tap } from 'rxjs/operators'
 
 export const debug = (message = '', type = 'log') =>
   tap((value) => {

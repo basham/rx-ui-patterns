@@ -8,7 +8,9 @@
   </head>
   <body>
     <rui-page></rui-page>
-    <script src="index.js" type="module"></script>
+    <script defer src="./web_modules/es-module-shims.js"></script>
+    <script src="./web_modules/import-map.json" type="importmap-shim"></script>
+    <script src="./index.js" type="module-shim"></script>
     <noscript>
       Enable JavaScript to run this app.
     </noscript>

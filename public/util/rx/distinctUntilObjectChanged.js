@@ -1,4 +1,4 @@
-import { distinctUntilChanged } from '/web_modules/rxjs/operators.js'
+import { distinctUntilChanged } from 'rxjs/operators'
 
 export const distinctUntilObjectChanged = () =>
   distinctUntilChanged(null, (value) => JSON.stringify(value))

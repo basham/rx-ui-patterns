@@ -1,5 +1,5 @@
-import { pipe } from '/web_modules/rxjs.js'
-import { tap } from '/web_modules/rxjs/operators.js'
+import { pipe } from 'rxjs'
+import { tap } from 'rxjs/operators'
 import { animationFrame } from './animationFrame.js'
 
 export const renderComponentFactory = (adapter) => (element, renderer) => pipe(

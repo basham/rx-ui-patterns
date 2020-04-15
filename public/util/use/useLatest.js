@@ -1,4 +1,4 @@
-import { tap } from '/web_modules/rxjs/operators.js'
+import { tap } from 'rxjs/operators'
 
 export function useLatest () {
   let latest = null

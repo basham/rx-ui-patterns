@@ -1,4 +1,4 @@
-import { BehaviorSubject } from '/web_modules/rxjs.js'
+import { BehaviorSubject } from 'rxjs'
 
 export function useBoolean (initValue = false) {
   let source = !!initValue

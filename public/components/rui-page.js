@@ -1,4 +1,4 @@
-import { define, html } from '/web_modules/uce.js'
+import { define, html } from 'uce'
 
 const TITLE = 'Reactive UI Patterns'
 const DEFAULT_PAGE = 'default'
