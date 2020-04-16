@@ -1,15 +1,11 @@
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useMode, useSubscribe } from '../util/use.js'
+import { useFocus, useMode, useSubscribe } from '../util/use.js'
 
 define('rui-form', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
   const form = useForm()
-  const props$ = combineLatestObject({
-    mode: form.mode$,
-    idleMode: form.idleMode,
-    editMode: form.editMode
-  })
+  const props$ = combineLatestObject(form.props)
   const render$ = props$.pipe(
     renderComponent(el, renderForm)
   )
@@ -19,38 +15,52 @@ define('rui-form', (el) => {
 
 function useForm () {
   const mode = useMode(['idle', 'edit'])
-  const idleMode = () => mode.set('idle')
-  const editMode = () => mode.set('edit')
-  return {
-    mode$: mode.value$,
+  const focus = useFocus()
+  const methods = {
     idleMode,
     editMode
   }
-}
+  const props = {
+    mode: mode.value$,
+    ...methods
+  }
+  return {
+    mode$: mode.value$,
+    ...methods,
+    props
+  }
 
-const renderMap = {
-  idle: renderIdle,
-  edit: renderEdit
+  function idleMode () {
+    mode.set('idle')
+    focus.refocus()
+  }
+
+  function editMode () {
+    focus.remember()
+    mode.set('edit')
+    focus.focus(document.getElementById('name-input'))
+  }
 }
 
 function renderForm (props) {
-  const { mode } = props
   return html`
     <h1>Form</h1>
-    ${renderMap[mode](props)}
+    ${renderIdle(props)}
+    ${renderEdit(props)}
   `
 }
 
 function renderIdle (props) {
-  const { editMode } = props
+  const { editMode, mode } = props
   return html`
-    <dl>
+    <dl .hidden=${mode !== 'idle'}>
       <dt>Profile</dt>
       <dd>Chris</dd>
       <dd>chris@example.com</dd>
       <dd>
         <button
           class='link'
+          id='edit-profile'
           onclick=${editMode}>
           Edit
         </button>
@@ -60,10 +70,11 @@ function renderIdle (props) {
 }
 
 function renderEdit (props) {
-  const { idleMode, submit } = props
+  const { idleMode, mode, submit } = props
   return html`
     <form
       autocomplete='off'
+      .hidden=${mode !== 'edit'}
       onsubmit=${submit}>
       <h2>Edit</h2>
       <div class='m-top-sm'>

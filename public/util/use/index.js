@@ -1,6 +1,7 @@
 export * from './useAttribute.js'
 export * from './useBoolean.js'
 export * from './useCallbackStack.js'
+export * from './useFocus.js'
 export * from './useInt.js'
 export * from './useLatest.js'
 export * from './useMap.js'
