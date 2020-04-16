@@ -3,7 +3,9 @@ import { useCallbackStack } from './useCallbackStack.js'
 
 export function useSubscribe () {
   const [add, unsubscribe] = useCallbackStack()
-  const subscribe = (source) => {
+  return [subscribe, unsubscribe]
+
+  function subscribe (source) {
     if (isObservable(source)) {
       const sub = source.subscribe()
       add(() => sub.unsubscribe())
@@ -15,7 +17,8 @@ export function useSubscribe () {
     }
     if (typeof source === 'function') {
       add(source)
+      return
     }
+    throw new Error('Argument must be an Observable, Subscription, or function.')
   }
-  return [subscribe, unsubscribe]
 }

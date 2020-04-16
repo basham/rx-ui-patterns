@@ -1,26 +1,27 @@
-import { BehaviorSubject } from 'rxjs'
+import { useValue } from './useValue.js'
 
 export function useBoolean (initValue = false) {
-  let source = !!initValue
-  const source$ = new BehaviorSubject(source)
-  const update = () => source$.next(source)
-  const toggle = () => set(!source)
-  const toFalse = () => set(false)
-  const toTrue = () => set(true)
-  const set = (value) => {
-    source = !!value
-    update()
-  }
+  const source = useValue(initValue, { parseValue })
   return {
-    get value () {
-      return source
-    },
-    set value (value) {
-      return set(value)
-    },
+    ...source,
     toggle,
     toFalse,
-    toTrue,
-    value$: source$.asObservable()
+    toTrue
   }
+
+  function toggle () {
+    source.set(!source.value)
+  }
+
+  function toFalse () {
+    source.set(false)
+  }
+
+  function toTrue () {
+    source.set(true)
+  }
+}
+
+function parseValue (value) {
+  return !!value
 }

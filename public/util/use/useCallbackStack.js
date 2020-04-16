@@ -1,13 +1,16 @@
 export function useCallbackStack () {
   const stack = new Set()
-  const add = (value) => {
-    if (typeof value === 'function') {
-      stack.add(value)
+  return [add, call]
+
+  function add (value) {
+    if (typeof value !== 'function') {
+      throw new Error('Argument must be a function.')
     }
+    stack.add(value)
   }
-  const call = () => {
+
+  function call () {
     stack.forEach((callback) => callback())
     stack.clear()
   }
-  return [add, call]
 }

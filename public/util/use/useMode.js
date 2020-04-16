@@ -1,28 +1,20 @@
-import { BehaviorSubject } from 'rxjs'
+import { useValue } from './useValue.js'
 
-export function useMode (modes, initMode) {
+export function useMode (modes, initValue) {
   if (!Array.isArray(modes)) {
-    throw new Error('The first argument must be an array of modes')
+    throw new Error('First argument must be an array.')
   }
   if (modes.length < 2) {
-    throw new Error('There must be at least two modes')
+    throw new Error('There must be at least two modes.')
   }
-  const mode = modes.includes(initMode) ? initMode : modes[0]
-  const value$ = new BehaviorSubject(mode)
-  const set = (mode) => {
-    if (modes.includes(mode) && value$.value !== mode) {
-      value$.next(mode)
+  initValue = initValue === undefined ? modes[0] : initValue
+  const source = useValue(initValue, { parseValue })
+  return source
+
+  function parseValue (value) {
+    if (!modes.includes(value)) {
+      throw new Error(`"${value}" is not a valid mode.`)
     }
-  }
-  return {
-    value$: value$.asObservable(),
-    get value () {
-      return value$.value
-    },
-    set value (mode) {
-      return set(mode)
-    },
-    get: () => value$.value,
-    set
+    return value
   }
 }

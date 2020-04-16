@@ -1,32 +1,28 @@
-import { BehaviorSubject } from 'rxjs'
+import { useValue } from './useValue.js'
 
 export function useInt (initValue = 0) {
-  let source = isNaN(parseInt(initValue)) ? 0 : parseInt(initValue)
-  const source$ = new BehaviorSubject(source)
-  const update = () => source$.next(source)
-  const decrement = () => {
-    source = source - 1
-    update()
-    return source
-  }
-  const increment = () => {
-    source = source + 1
-    update()
-    return source
-  }
-  const set = (value) => {
-    source = value
-    update()
-  }
+  const source = useValue(initValue, { parseValue })
   return {
-    get value () {
-      return source
-    },
-    set value (value) {
-      set(value)
-    },
+    ...source,
     decrement,
-    increment,
-    value$: source$.asObservable()
+    increment
   }
+
+  function decrement () {
+    source.set(source.value - 1)
+    return source.value
+  }
+
+  function increment () {
+    source.set(source.value + 1)
+    return source.value
+  }
+}
+
+function parseValue (value) {
+  const v = parseInt(value)
+  if (isNaN(v)) {
+    throw new Error(`"${value}" must be an integer.`)
+  }
+  return v
 }

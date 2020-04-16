@@ -1,27 +1,30 @@
+import { useValue } from './useValue.js'
+
 export function useFocus () {
-  let activeElement = null
+  const source = useValue()
   return {
+    value$: source.value$,
     focus,
     refocus,
     remember
   }
 
-  function focus (element) {
-    if (!(element instanceof window.HTMLElement)) {
-      return
-    }
-    window.requestAnimationFrame(() => {
-      element.focus()
-    })
-  }
-
   // Pop?
   function refocus () {
-    focus(activeElement)
+    focus(source.value)
   }
 
   // Push?
   function remember () {
-    activeElement = document.activeElement
+    source.set(document.activeElement)
   }
+}
+
+function focus (element) {
+  if (!(element instanceof window.HTMLElement)) {
+    return
+  }
+  window.requestAnimationFrame(() => {
+    element.focus()
+  })
 }
