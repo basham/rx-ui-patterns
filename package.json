@@ -14,7 +14,7 @@
     "type": "git",
     "url": "git+https://github.com/basham/rx-ui-patterns.git"
   },
-  "author": "",
+  "author": "Chris Basham <chris@bash.am>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/basham/rx-ui-patterns/issues"
