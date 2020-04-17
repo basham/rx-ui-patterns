@@ -5,8 +5,7 @@ import { useBoolean, useFocus, useMode, useSubscribe, useValue } from '../util/u
 define('rui-form', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
   const form = useForm()
-  const props$ = combineLatestObject(form.props)
-  const render$ = props$.pipe(
+  const render$ = form.props$.pipe(
     renderComponent(el, renderForm)
   )
   subscribe(render$)
@@ -20,23 +19,26 @@ function useForm () {
   const nameField = useField({ id: 'name-field' })
   const emailField = useField({ id: 'email-field' })
   const focus = useFocus()
-  const methods = {
-    submit,
-    toIdleMode,
-    toEditMode
-  }
-  const props = {
+  const props$ = combineLatestObject({
     mode: mode.value$,
     name: name.value$,
     email: email.value$,
     nameField: nameField.props$,
     emailField: emailField.props$,
-    ...methods
-  }
+    cancel,
+    edit,
+    submit
+  })
   return {
-    mode$: mode.value$,
-    ...methods,
-    props
+    props$
+  }
+
+  function cancel () {
+    toIdleMode()
+  }
+
+  function edit () {
+    toEditMode()
   }
 
   function submit (event) {
@@ -64,19 +66,16 @@ function useField (options = {}) {
   const { id, value = '' } = options
   const field = useValue(value)
   const emptyError = useBoolean(false)
-  const props = {
+  const props$ = combineLatestObject({
     id,
     invalid: emptyError.value$,
-    set: field.set,
     change,
     value: field.value$
-  }
-  const props$ = combineLatestObject(props)
+  })
   return {
     ...field,
     props$,
     getElement,
-    props,
     verify
   }
 
@@ -103,7 +102,7 @@ function renderForm (props) {
 }
 
 function renderIdle (props) {
-  const { toEditMode, mode } = props
+  const { edit, mode } = props
   const { name, email } = props
   return html`
     <dl .hidden=${mode !== 'idle'}>
@@ -114,7 +113,7 @@ function renderIdle (props) {
         <button
           class='link'
           id='edit-profile'
-          onclick=${toEditMode}>
+          onclick=${edit}>
           Edit
         </button>
       </dd>
@@ -123,7 +122,7 @@ function renderIdle (props) {
 }
 
 function renderEdit (props) {
-  const { toIdleMode, mode, submit } = props
+  const { cancel, mode, submit } = props
   const { nameField, emailField } = props
   return html`
     <form
@@ -159,7 +158,7 @@ function renderEdit (props) {
       <div class='flex flex--gap-sm m-top-sm'>
         <button type='submit'>Save</button>
         <button
-          onclick=${toIdleMode}
+          onclick=${cancel}
           type='button'>
           Cancel
         </button>
