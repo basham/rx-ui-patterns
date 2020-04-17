@@ -25,62 +25,54 @@ export function useMap () {
     keys$,
     size$,
     values$,
-    get entries () {
-      return entries()
-    },
-    get keys () {
-      return keys()
-    },
-    get size () {
-      return size()
-    },
-    get values () {
-      return values()
-    },
     clear,
     delete: del,
+    entries,
     get,
     has,
-    set
+    keys,
+    set,
+    size,
+    values
   }
 
   function clear () {
-    source.value.clear()
+    source.value().clear()
     source.update()
   }
 
   function del (...values) {
-    values.forEach((value) => source.value.delete(value))
+    values.forEach((value) => source.value().delete(value))
     source.update()
   }
 
   function entries () {
-    return [...source.value.entries()]
+    return [...source.value().entries()]
   }
 
   function get (key) {
-    return source.value.get(key)
+    return source.value().get(key)
   }
 
   function has (key) {
-    return source.value.has(key)
+    return source.value().has(key)
   }
 
   function keys () {
-    return [...source.value.keys()]
+    return [...source.value().keys()]
   }
 
   function set (key, value) {
-    const r = source.value.set(key, value)
+    const r = source.value().set(key, value)
     source.update()
     return r
   }
 
   function size () {
-    return source.value.size
+    return source.value().size
   }
 
   function values () {
-    return [...source.value.values()]
+    return [...source.value().values()]
   }
 }

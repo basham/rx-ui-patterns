@@ -15,8 +15,10 @@ define('rui-form', (el) => {
 
 function useForm () {
   const mode = useMode(['idle', 'edit'])
-  const nameField = useField({ id: 'name-field', value: 'Chris' })
-  const emailField = useField({ id: 'email-field', value: 'me@example.com' })
+  const name = useValue('Chris')
+  const email = useValue('me@example.com')
+  const nameField = useField({ id: 'name-field' })
+  const emailField = useField({ id: 'email-field' })
   const focus = useFocus()
   const methods = {
     submit,
@@ -25,6 +27,8 @@ function useForm () {
   }
   const props = {
     mode: mode.value$,
+    name: name.value$,
+    email: email.value$,
     nameField: nameField.props$,
     emailField: emailField.props$,
     ...methods
@@ -37,8 +41,9 @@ function useForm () {
 
   function submit (event) {
     event.preventDefault()
-    nameField.verify()
-    emailField.verify()
+    name.set(nameField.value())
+    email.set(emailField.value())
+    toIdleMode()
   }
 
   function toIdleMode () {
@@ -48,6 +53,8 @@ function useForm () {
 
   function toEditMode () {
     focus.remember()
+    nameField.set(name.value())
+    emailField.set(email.value())
     mode.set('edit')
     focus.focus(nameField.getElement())
   }
@@ -66,8 +73,8 @@ function useField (options = {}) {
   }
   const props$ = combineLatestObject(props)
   return {
+    ...field,
     props$,
-    field,
     getElement,
     props,
     verify
@@ -97,12 +104,12 @@ function renderForm (props) {
 
 function renderIdle (props) {
   const { toEditMode, mode } = props
-  const { nameField, emailField } = props
+  const { name, email } = props
   return html`
     <dl .hidden=${mode !== 'idle'}>
       <dt>Profile</dt>
-      <dd>${nameField.value}</dd>
-      <dd>${emailField.value}</dd>
+      <dd>${name}</dd>
+      <dd>${email}</dd>
       <dd>
         <button
           class='link'

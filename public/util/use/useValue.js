@@ -7,16 +7,11 @@ export function useValue (initValue = null, options = {}) {
   const subject$ = new BehaviorSubject(initValue)
   return {
     value$: subject$.asObservable(),
-    get value () {
-      return get()
-    },
-    set value (value) {
-      set(value)
-    },
     get,
     set,
     tapSet,
-    update
+    update,
+    value: get
   }
 
   function get () {

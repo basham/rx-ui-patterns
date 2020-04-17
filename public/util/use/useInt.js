@@ -9,13 +9,13 @@ export function useInt (initValue = 0) {
   }
 
   function decrement () {
-    source.set(source.value - 1)
-    return source.value
+    source.set(source.value() - 1)
+    return source.value()
   }
 
   function increment () {
-    source.set(source.value + 1)
-    return source.value
+    source.set(source.value() + 1)
+    return source.value()
   }
 }
 

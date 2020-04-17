@@ -15,37 +15,33 @@ export function useSet () {
   return {
     size$,
     values$,
-    get size () {
-      return size()
-    },
-    get values () {
-      return values()
-    },
     add,
     clear,
-    delete: del
+    delete: del,
+    size,
+    values
   }
 
   function add (...values) {
-    values.forEach((value) => source.value.add(value))
+    values.forEach((value) => source.value().add(value))
     source.update()
   }
 
   function clear () {
-    source.value.clear()
+    source.value().clear()
     source.update()
   }
 
   function del (...values) {
-    values.forEach((value) => source.value.delete(value))
+    values.forEach((value) => source.value().delete(value))
     source.update()
   }
 
   function size () {
-    return source.value.size
+    return source.value().size
   }
 
   function values () {
-    return [...source.value.values()]
+    return [...source.value().values()]
   }
 }

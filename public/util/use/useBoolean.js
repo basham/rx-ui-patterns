@@ -10,7 +10,7 @@ export function useBoolean (initValue = false) {
   }
 
   function toggle () {
-    source.set(!source.value)
+    source.set(!source.value())
   }
 
   function toFalse () {

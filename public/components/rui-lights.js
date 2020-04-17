@@ -78,9 +78,7 @@ function useLights () {
   }
   return {
     value$,
-    get value () {
-      return latest.value
-    },
+    value: latest.value,
     ...methods,
     props
   }
@@ -107,19 +105,19 @@ function useLights () {
   }
 
   function removeSelected () {
-    selections.values.forEach((id) => lights.delete(id))
+    selections.values().forEach((id) => lights.delete(id))
     selections.clear()
   }
 
   function selectAll () {
-    const ids = lights.values.map(({ id }) => id)
+    const ids = lights.values().map(({ id }) => id)
     selections.add(...ids)
   }
 
   function toggleAll () {
-    const { isAllOn } = latest.value
+    const { isAllOn } = latest.value()
     const turn = isAllOn ? 'turnOff' : 'turnOn'
-    lights.values.forEach((light) => light[turn]())
+    lights.values().forEach((light) => light[turn]())
   }
 }
 
@@ -146,9 +144,7 @@ function useLight (power = OFF, other = {}) {
   return {
     ...other,
     value$,
-    get value () {
-      return latest.value
-    },
+    value: latest.value,
     ...methods
   }
 }

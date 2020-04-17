@@ -11,7 +11,7 @@ export function useFocus () {
 
   // Pop?
   function refocus () {
-    focus(source.value)
+    focus(source.value())
   }
 
   // Push?
