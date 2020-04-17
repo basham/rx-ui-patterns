@@ -21,6 +21,10 @@ export function useMap () {
     shareReplay(1)
   )
   return {
+    entries$,
+    keys$,
+    size$,
+    values$,
     get entries () {
       return entries()
     },
@@ -37,11 +41,7 @@ export function useMap () {
     delete: del,
     get,
     has,
-    set,
-    entries$,
-    keys$,
-    size$,
-    values$
+    set
   }
 
   function clear () {

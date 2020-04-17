@@ -19,16 +19,9 @@ const powerLabels = {
 
 define('rui-lights', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const lights = useLights(el)
+  const lights = useLights()
   lights.add(ON)
-  const props$ = combineLatestObject({
-    addLight: () => lights.add(OFF),
-    selectAll: lights.selectAll,
-    deselectAll: lights.deselectAll,
-    removeSelected: lights.removeSelected,
-    toggleAll: lights.toggleAll,
-    lights: lights.value$
-  })
+  const props$ = combineLatestObject(lights.props)
   const render$ = props$.pipe(
     renderComponent(el, renderLights)
   )
@@ -36,40 +29,11 @@ define('rui-lights', (el) => {
   return unsubscribe
 })
 
-function useLights (el) {
+function useLights () {
   const latest = useValue()
   const lights = useMap()
   const idCounter = useInt()
-  const getId = () => idCounter.increment()
   const selections = useSet()
-  const selectAll = () => {
-    const ids = lights.values.map(({ id }) => id)
-    selections.add(...ids)
-  }
-  const deselectAll = () => {
-    selections.clear()
-  }
-  const removeSelected = () => {
-    selections.values.forEach((id) => lights.delete(id))
-    selections.clear()
-  }
-  const add = (power) => {
-    const id = getId()
-    const key = {}
-    const label = `Light ${id}`
-    const select = (e) => {
-      const { checked } = e.target
-      const method = checked ? 'add' : 'delete'
-      selections[method](id)
-    }
-    const light = useLight(power, { id, key, label, select })
-    lights.set(id, light)
-  }
-  const toggleAll = () => {
-    const { isAllOn } = latest.value
-    const turn = isAllOn ? 'turnOff' : 'turnOn'
-    lights.values.forEach((light) => light[turn]())
-  }
   const lights$ = lights.values$.pipe(
     switchMap((lights) => {
       const values = lights.map((light) => light.value$)
@@ -100,16 +64,62 @@ function useLights (el) {
     latest.tapSet(),
     shareReplay(1)
   )
-  return {
-    get value () {
-      return latest.value
-    },
+  const methods = {
     add,
     selectAll,
     deselectAll,
     removeSelected,
-    toggleAll,
-    value$
+    toggleAll
+  }
+  const props = {
+    ...methods,
+    add: (event) => add(OFF),
+    lights: value$
+  }
+  return {
+    value$,
+    get value () {
+      return latest.value
+    },
+    ...methods,
+    props
+  }
+
+  function add (power) {
+    const id = getId()
+    const key = {}
+    const label = `Light ${id}`
+    const select = (e) => {
+      const { checked } = e.target
+      const method = checked ? 'add' : 'delete'
+      selections[method](id)
+    }
+    const light = useLight(power, { id, key, label, select })
+    lights.set(id, light)
+  }
+
+  function deselectAll () {
+    selections.clear()
+  }
+
+  function getId () {
+    return idCounter.increment()
+  }
+
+  function removeSelected () {
+    selections.values.forEach((id) => lights.delete(id))
+    selections.clear()
+  }
+
+  function selectAll () {
+    const ids = lights.values.map(({ id }) => id)
+    selections.add(...ids)
+  }
+
+  function toggleAll () {
+    const { isAllOn } = latest.value
+    const turn = isAllOn ? 'turnOff' : 'turnOn'
+    lights.values.forEach((light) => light[turn]())
   }
 }
 
@@ -135,16 +145,16 @@ function useLight (power = OFF, other = {}) {
   )
   return {
     ...other,
-    ...methods,
+    value$,
     get value () {
       return latest.value
     },
-    value$
+    ...methods
   }
 }
 
 function renderLights (props) {
-  const { addLight, selectAll, deselectAll, removeSelected, toggleAll, lights } = props
+  const { add, selectAll, deselectAll, removeSelected, toggleAll, lights } = props
   const { count, onCount } = lights
   const { selectedCount, hasSelections, isAllSelected } = lights
   return html`
@@ -158,7 +168,7 @@ function renderLights (props) {
       </span>
     </p>
     <div class='flex flex--gap-sm m-top-sm'>
-      <button onclick=${addLight}>
+      <button onclick=${add}>
         Add
       </button>
       <button

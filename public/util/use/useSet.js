@@ -13,6 +13,8 @@ export function useSet () {
     shareReplay(1)
   )
   return {
+    size$,
+    values$,
     get size () {
       return size()
     },
@@ -21,9 +23,7 @@ export function useSet () {
     },
     add,
     clear,
-    delete: del,
-    size$,
-    values$
+    delete: del
   }
 
   function add (...values) {
