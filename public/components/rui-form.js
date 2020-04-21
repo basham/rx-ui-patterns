@@ -103,19 +103,11 @@ function useForm () {
 function useField (options = {}) {
   const { id, label = '', required = true, type = 'text', value = '' } = options
   const field = useValue(value)
-  const errorMessage = useValue('', { distinct: true })
+  const errorMessage = useErrorMessage({ id, label, type })
   const latest = useValue()
-  const error$ = combineLatestObject({
-    id: `${id}-error-message`,
-    message: errorMessage.value$,
-    target: id
-  }).pipe(
-    map((value) => ({ ...value, invalid: !!value.message })),
-    shareReplay(1)
-  )
   const value$ = combineLatestObject({
     change,
-    error: error$,
+    error: errorMessage.value$,
     id,
     label,
     required,
@@ -127,11 +119,10 @@ function useField (options = {}) {
   )
   return {
     ...field,
-    error$,
+    error$: errorMessage.value$,
     value$,
-    checkValidity,
+    checkValidity: errorMessage.checkValidity,
     focus,
-    getElement,
     value: latest.value
   }
 
@@ -139,20 +130,37 @@ function useField (options = {}) {
     field.set(event.target.value)
   }
 
+  function focus () {
+    window.requestAnimationFrame(() => {
+      document.getElementById(id).focus()
+    })
+  }
+}
+
+function useErrorMessage (options = {}) {
+  const { id, label, type } = options
+  const message = useValue('', { distinct: true })
+  const value$ = combineLatestObject({
+    id: `${id}-error-message`,
+    message: message.value$,
+    target: id
+  }).pipe(
+    map((value) => ({ ...value, invalid: !!value.message })),
+    shareReplay(1)
+  )
+  return {
+    value$,
+    checkValidity
+  }
+
   function checkValidity () {
-    const { validity } = getElement()
-    const message = getErrorMessage(validity)
-    errorMessage.set(message)
+    const { validity } = document.getElementById(id)
+    const text = getMessage(validity)
+    message.set(text)
     return validity.valid
   }
 
-  function focus () {
-    window.requestAnimationFrame(() => {
-      getElement().focus()
-    })
-  }
-
-  function getErrorMessage (validity) {
+  function getMessage (validity) {
     if (validity.valueMissing) {
       return `Enter ${label}`
     }
@@ -160,10 +168,6 @@ function useField (options = {}) {
       return `${label} must be a valid address`
     }
     return ''
-  }
-
-  function getElement () {
-    return document.getElementById(id)
   }
 }
 
