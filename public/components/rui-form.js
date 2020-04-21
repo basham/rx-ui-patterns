@@ -5,7 +5,7 @@ import { useBoolean, useFocus, useMode, useSubscribe, useValue } from '../util/u
 define('rui-form', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
   const form = useForm()
-  const render$ = form.props$.pipe(
+  const render$ = form.value$.pipe(
     renderComponent(el, renderForm)
   )
   subscribe(render$)
@@ -16,21 +16,28 @@ function useForm () {
   const mode = useMode(['idle', 'edit'])
   const name = useValue('Chris')
   const email = useValue('me@example.com')
-  const nameField = useField({ id: 'name-field' })
-  const emailField = useField({ id: 'email-field' })
+  const nameField = useField({
+    id: 'name-field',
+    label: 'Name'
+  })
+  const emailField = useField({
+    id: 'email-field',
+    label: 'Email',
+    type: 'email'
+  })
   const focus = useFocus()
-  const props$ = combineLatestObject({
+  const value$ = combineLatestObject({
     mode: mode.value$,
     name: name.value$,
     email: email.value$,
-    nameField: nameField.props$,
-    emailField: emailField.props$,
+    nameField: nameField.value$,
+    emailField: emailField.value$,
     cancel,
     edit,
     submit
   })
   return {
-    props$
+    value$
   }
 
   function cancel () {
@@ -63,18 +70,21 @@ function useForm () {
 }
 
 function useField (options = {}) {
-  const { id, value = '' } = options
+  const { id, label = '', required = true, type = 'text', value = '' } = options
   const field = useValue(value)
   const emptyError = useBoolean(false)
-  const props$ = combineLatestObject({
+  const value$ = combineLatestObject({
+    change,
     id,
     invalid: emptyError.value$,
-    change,
+    label,
+    required,
+    type,
     value: field.value$
   })
   return {
     ...field,
-    props$,
+    value$,
     getElement,
     verify
   }
@@ -131,31 +141,9 @@ function renderEdit (props) {
       novalidate
       onsubmit=${submit}>
       <h2>Edit</h2>
-      <div class='m-top-sm'>
-        <label for=${nameField.id}>
-          Name (required)
-        </label>
-        <input
-          aria-invalid=${nameField.invalid}
-          id=${nameField.id}
-          onkeyup=${nameField.change}
-          required
-          type='text'
-          .value=${nameField.value} />
-      </div>
-      <div class='m-top-sm'>
-        <label for=${emailField.id}>
-          Email (required)
-        </label>
-        <input
-          aria-invalid=${emailField.invalid}
-          id=${emailField.id}
-          onkeyup=${emailField.change}
-          required
-          type='email'
-          .value=${emailField.value} />
-      </div>
-      <div class='flex flex--gap-sm m-top-sm'>
+      ${renderField(nameField)}
+      ${renderField(emailField)}
+      <div class='flex flex--gap-sm m-top-md'>
         <button type='submit'>Save</button>
         <button
           onclick=${cancel}
@@ -165,4 +153,29 @@ function renderEdit (props) {
       </div>
     </form>
   `
+}
+
+function renderField (props) {
+  const { change, id, invalid, label, required, type, value } = props
+  return html`
+    <div class='field'>
+      <label for=${id}>
+        ${label} ${renderRequiredFieldIndicator(required)}
+      </label>
+      <input
+        aria-invalid=${invalid}
+        id=${id}
+        onkeyup=${change}
+        .required=${required}
+        type=${type}
+        .value=${value} />
+    </div>
+  `
+}
+
+function renderRequiredFieldIndicator (required) {
+  if (required) {
+    return html`<span class='field__required'>*</span>`
+  }
+  return html`<span class='field__optional'>(optional)</span>`
 }

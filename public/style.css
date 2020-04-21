@@ -8,6 +8,7 @@
   --color-light-gray: #dddddd;
   --color-dark-gray: #666666;
   --color-blue: #0074d9;
+  --color-red: #ff4136;
   --color-white: #ffffff;
 }
 
@@ -251,6 +252,19 @@ input[type="checkbox"]:checked:active + label [data-checkbox] {
 
 .box__row + .box__row {
   border-top: calc(1rem/16) solid var(--color-light-gray);
+}
+
+.field {
+  margin-top: 1.5rem;
+}
+
+.field__required {
+  color: var(--color-red);
+}
+
+.field__optional {
+  color: var(--color-dark-gray);
+  font-weight: normal;
 }
 
 /*
