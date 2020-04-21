@@ -1,6 +1,7 @@
+import { map } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useBoolean, useFocus, useMode, useSubscribe, useValue } from '../util/use.js'
+import { useFocus, useMode, useSubscribe, useValue } from '../util/use.js'
 
 define('rui-form', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
@@ -50,9 +51,13 @@ function useForm () {
 
   function submit (event) {
     event.preventDefault()
-    name.set(nameField.value())
-    email.set(emailField.value())
-    toIdleMode()
+
+    nameField.checkValidity()
+    emailField.checkValidity()
+
+    // name.set(nameField.value())
+    // email.set(emailField.value())
+    // toIdleMode()
   }
 
   function toIdleMode () {
@@ -72,11 +77,17 @@ function useForm () {
 function useField (options = {}) {
   const { id, label = '', required = true, type = 'text', value = '' } = options
   const field = useValue(value)
-  const emptyError = useBoolean(false)
+  const errorMessage = useValue('', { distinct: true })
+  const error$ = combineLatestObject({
+    id: `${id}-error-message`,
+    message: errorMessage.value$
+  }).pipe(
+    map((value) => ({ ...value, invalid: !!value.message }))
+  )
   const value$ = combineLatestObject({
     change,
+    error: error$,
     id,
-    invalid: emptyError.value$,
     label,
     required,
     type,
@@ -86,20 +97,27 @@ function useField (options = {}) {
     ...field,
     value$,
     getElement,
-    verify
+    checkValidity
   }
 
   function change (event) {
     field.set(event.target.value)
   }
 
-  function getElement () {
-    return document.getElementById(id)
+  function checkValidity () {
+    errorMessage.set(getErrorMessage())
   }
 
-  function verify () {
-    const empty = !field.value.length
-    emptyError.set(empty)
+  function getErrorMessage () {
+    const { valueMissing } = getElement().validity
+    if (valueMissing) {
+      return `Enter ${label}`
+    }
+    return ''
+  }
+
+  function getElement () {
+    return document.getElementById(id)
   }
 }
 
@@ -143,7 +161,7 @@ function renderEdit (props) {
       <h2>Edit</h2>
       ${renderField(nameField)}
       ${renderField(emailField)}
-      <div class='flex flex--gap-sm m-top-md'>
+      <div class='flex flex--gap-1 m-top-3'>
         <button type='submit'>Save</button>
         <button
           onclick=${cancel}
@@ -156,19 +174,28 @@ function renderEdit (props) {
 }
 
 function renderField (props) {
-  const { change, id, invalid, label, required, type, value } = props
+  const { change, error, id, label, required, type, value } = props
   return html`
-    <div class='field'>
+    <div class='field m-top-3'>
       <label for=${id}>
         ${label} ${renderRequiredFieldIndicator(required)}
       </label>
       <input
-        aria-invalid=${invalid}
+        aria-describedby=${error.id}
+        aria-invalid=${error.invalid}
+        class='field__input'
         id=${id}
         onkeyup=${change}
         .required=${required}
         type=${type}
         .value=${value} />
+      <div
+        class='field__error flex flex--gap-1 m-top-1'
+        .hidden=${!error.message}
+        id=${error.id}>
+        <rui-icon name='alert-circle' />
+        <span>${error.message}</span>
+      </div>
     </div>
   `
 }

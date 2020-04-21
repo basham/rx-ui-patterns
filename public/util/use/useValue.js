@@ -2,7 +2,7 @@ import { BehaviorSubject } from 'rxjs'
 import { tap } from 'rxjs/operators'
 
 export function useValue (initValue = null, options = {}) {
-  const { parseValue = (value) => value } = options
+  const { distinct = false, parseValue = (value) => value } = options
   initValue = parseValue(initValue)
   const subject$ = new BehaviorSubject(initValue)
   return {
@@ -20,6 +20,9 @@ export function useValue (initValue = null, options = {}) {
 
   function set (value) {
     const v = parseValue(value)
+    if (distinct && v === get()) {
+      return
+    }
     subject$.next(v)
   }
 

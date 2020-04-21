@@ -10,6 +10,10 @@
   --color-blue: #0074d9;
   --color-red: #ff4136;
   --color-white: #ffffff;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
 }
 
 * {
@@ -254,10 +258,6 @@ input[type="checkbox"]:checked:active + label [data-checkbox] {
   border-top: calc(1rem/16) solid var(--color-light-gray);
 }
 
-.field {
-  margin-top: 1.5rem;
-}
-
 .field__required {
   color: var(--color-red);
 }
@@ -265,6 +265,12 @@ input[type="checkbox"]:checked:active + label [data-checkbox] {
 .field__optional {
   color: var(--color-dark-gray);
   font-weight: normal;
+}
+
+.field__error {
+  color: var(--color-red);
+  font-size: 1rem;
+  line-height: calc(24rem/16);
 }
 
 /*
@@ -295,12 +301,12 @@ rui-icon {
   align-items: center;
 }
 
-.flex--gap-sm > :not(:last-child) {
-  margin-right: 0.5rem;
+.flex--gap-1 > :not(:last-child) {
+  margin-right: var(--space-1);
 }
 
-.flex--gap-md > :not(:last-child) {
-  margin-right: 1rem;
+.flex--gap-2 > :not(:last-child) {
+  margin-right: var(--space-2);
 }
 
 .flex-grow {
@@ -311,12 +317,20 @@ rui-icon {
   margin: 0;
 }
 
-.m-top-sm {
-  margin-top: 1rem;
+.m-top-1 {
+  margin-top: var(--space-1);
 }
 
-.m-top-md {
-  margin-top: 2rem;
+.m-top-2 {
+  margin-top: var(--space-2);
+}
+
+.m-top-3 {
+  margin-top: var(--space-3);
+}
+
+.m-top-4 {
+  margin-top: var(--space-4);
 }
 
 .width-sm {

@@ -163,7 +163,7 @@ function renderLights (props) {
         ${selectedCount}/${count} selected
       </span>
     </p>
-    <div class='flex flex--gap-sm m-top-sm'>
+    <div class='flex flex--gap-1 m-top-2'>
       <button onclick=${add}>
         Add
       </button>
@@ -192,7 +192,7 @@ function renderLight (props) {
   const checkboxId = `select-light-${id}`
   return html.for(key)`
     <li class='box__row flex'>
-      <span class='flex flex--center flex--gap-sm flex-grow'>
+      <span class='flex flex--center flex--gap-1 flex-grow'>
         <input
           .checked=${selected}
           class='sr-only'
@@ -201,7 +201,7 @@ function renderLight (props) {
           type='checkbox'
           value=${id} />
         <label
-          class='flex flex--center flex--gap-sm'
+          class='flex flex--center flex--gap-1'
           for=${checkboxId}>
           <rui-icon name='check' data-checkbox />
           <rui-icon name=${icon} />
@@ -209,7 +209,7 @@ function renderLight (props) {
           <span class='sr-only'>${valueLabel}</span>
         </label>
       </span>
-      <span class='flex flex--center flex--gap-sm'>
+      <span class='flex flex--center flex--gap-1'>
         <button
           aria-checked=${value === ON}
           aria-label=${label}
