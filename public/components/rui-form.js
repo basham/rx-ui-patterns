@@ -1,4 +1,5 @@
-import { map } from 'rxjs/operators'
+import { combineLatest } from 'rxjs'
+import { map, shareReplay, tap } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
 import { useFocus, useMode, useSubscribe, useValue } from '../util/use.js'
@@ -26,6 +27,29 @@ function useForm () {
     label: 'Email',
     type: 'email'
   })
+  const fields = [nameField, emailField]
+  const fieldErrors = fields.map(({ error$ }) => error$)
+  const errorSummary$ = combineLatest(fieldErrors).pipe(
+    map((allErrors) => {
+      const id = 'error-summary'
+      const errors = allErrors
+        .filter(({ invalid }) => invalid)
+      const count = errors.length
+      return { count, errors, id }
+    }),
+    tap(({ count, errors, id }) => {
+      if (count === 0) {
+        return
+      }
+      const focusTarget = count === 1 ? errors[0].target : id
+      window.requestAnimationFrame(() => {
+        const el = document.getElementById(focusTarget)
+        if (el) {
+          el.focus()
+        }
+      })
+    })
+  )
   const focus = useFocus()
   const value$ = combineLatestObject({
     mode: mode.value$,
@@ -33,6 +57,7 @@ function useForm () {
     email: email.value$,
     nameField: nameField.value$,
     emailField: emailField.value$,
+    errorSummary: errorSummary$,
     cancel,
     edit,
     submit
@@ -51,13 +76,14 @@ function useForm () {
 
   function submit (event) {
     event.preventDefault()
-
-    nameField.checkValidity()
-    emailField.checkValidity()
-
-    // name.set(nameField.value())
-    // email.set(emailField.value())
-    // toIdleMode()
+    const validCount = fields.filter((field) => field.checkValidity()).length
+    const isValid = validCount === fields.length
+    if (!isValid) {
+      return
+    }
+    name.set(nameField.value().value)
+    email.set(emailField.value().value)
+    toIdleMode()
   }
 
   function toIdleMode () {
@@ -70,7 +96,7 @@ function useForm () {
     nameField.set(name.value())
     emailField.set(email.value())
     mode.set('edit')
-    focus.focus(nameField.getElement())
+    nameField.focus()
   }
 }
 
@@ -78,11 +104,14 @@ function useField (options = {}) {
   const { id, label = '', required = true, type = 'text', value = '' } = options
   const field = useValue(value)
   const errorMessage = useValue('', { distinct: true })
+  const latest = useValue()
   const error$ = combineLatestObject({
     id: `${id}-error-message`,
-    message: errorMessage.value$
+    message: errorMessage.value$,
+    target: id
   }).pipe(
-    map((value) => ({ ...value, invalid: !!value.message }))
+    map((value) => ({ ...value, invalid: !!value.message })),
+    shareReplay(1)
   )
   const value$ = combineLatestObject({
     change,
@@ -92,12 +121,18 @@ function useField (options = {}) {
     required,
     type,
     value: field.value$
-  })
+  }).pipe(
+    latest.tapSet(),
+    shareReplay(1)
+  )
   return {
     ...field,
+    error$,
     value$,
+    checkValidity,
+    focus,
     getElement,
-    checkValidity
+    value: latest.value
   }
 
   function change (event) {
@@ -105,13 +140,24 @@ function useField (options = {}) {
   }
 
   function checkValidity () {
-    errorMessage.set(getErrorMessage())
+    const { validity } = getElement()
+    const message = getErrorMessage(validity)
+    errorMessage.set(message)
+    return validity.valid
   }
 
-  function getErrorMessage () {
-    const { valueMissing } = getElement().validity
-    if (valueMissing) {
+  function focus () {
+    window.requestAnimationFrame(() => {
+      getElement().focus()
+    })
+  }
+
+  function getErrorMessage (validity) {
+    if (validity.valueMissing) {
       return `Enter ${label}`
+    }
+    if (validity.typeMismatch && type === 'email') {
+      return `${label} must be a valid address`
     }
     return ''
   }
@@ -151,13 +197,14 @@ function renderIdle (props) {
 
 function renderEdit (props) {
   const { cancel, mode, submit } = props
-  const { nameField, emailField } = props
+  const { nameField, emailField, errorSummary } = props
   return html`
     <form
       autocomplete='off'
       .hidden=${mode !== 'edit'}
       novalidate
       onsubmit=${submit}>
+      ${renderErrorSummary(errorSummary)}
       <h2>Edit</h2>
       ${renderField(nameField)}
       ${renderField(emailField)}
@@ -170,6 +217,42 @@ function renderEdit (props) {
         </button>
       </div>
     </form>
+  `
+}
+
+function renderErrorSummary (props) {
+  const { count, errors, id } = props
+  const titleId = `${id}-title`
+  return html`
+    <div
+      aria-labelledby=${titleId}
+      class='error-summary m-top-4'
+      id='error-summary'
+      .hidden=${count < 2}
+      role='alert'
+      tabindex='-1'>
+      <h2
+        class='m-none'
+        id=${titleId}>
+        There is a problem
+      </h2>
+      <ol class='plain-list m-top-1'>
+        ${errors.map(renderErrorSummaryItem)}
+      </ol>
+    </div>
+  `
+}
+
+function renderErrorSummaryItem (error) {
+  const { message, target } = error
+  return html`
+    <li class='m-none'>
+      <a
+        class='link'
+        href=${`#${target}`}>
+        ${message}
+      </a>
+    </li>
   `
 }
 
@@ -194,6 +277,7 @@ function renderField (props) {
         .hidden=${!error.message}
         id=${error.id}>
         <rui-icon name='alert-circle' />
+        <span class='sr-only'>Error: </span>
         <span>${error.message}</span>
       </div>
     </div>
