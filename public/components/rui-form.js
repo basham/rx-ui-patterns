@@ -1,4 +1,4 @@
-import { combineLatest } from 'rxjs'
+import { combineLatest, of } from 'rxjs'
 import { map, shareReplay, tap } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
@@ -28,28 +28,11 @@ function useForm () {
     type: 'email'
   })
   const fields = [nameField, emailField]
-  const fieldErrors = fields.map(({ error$ }) => error$)
-  const errorSummary$ = combineLatest(fieldErrors).pipe(
-    map((allErrors) => {
-      const id = 'error-summary'
-      const errors = allErrors
-        .filter(({ invalid }) => invalid)
-      const count = errors.length
-      return { count, errors, id }
-    }),
-    tap(({ count, errors, id }) => {
-      if (count === 0) {
-        return
-      }
-      const focusTarget = count === 1 ? errors[0].target : id
-      window.requestAnimationFrame(() => {
-        const el = document.getElementById(focusTarget)
-        if (el) {
-          el.focus()
-        }
-      })
-    })
-  )
+  const errorMessages = fields.map(({ errorMessage }) => errorMessage)
+  const errorSummary = useErrorSummary({
+    errorMessages,
+    id: 'error-summary'
+  })
   const focus = useFocus()
   const value$ = combineLatestObject({
     mode: mode.value$,
@@ -57,7 +40,7 @@ function useForm () {
     email: email.value$,
     nameField: nameField.value$,
     emailField: emailField.value$,
-    errorSummary: errorSummary$,
+    errorSummary: errorSummary.value$,
     cancel,
     edit,
     submit
@@ -76,8 +59,7 @@ function useForm () {
 
   function submit (event) {
     event.preventDefault()
-    const validCount = fields.filter((field) => field.checkValidity()).length
-    const isValid = validCount === fields.length
+    const isValid = errorSummary.checkValidity()
     if (!isValid) {
       return
     }
@@ -122,6 +104,7 @@ function useField (options = {}) {
     error$: errorMessage.value$,
     value$,
     checkValidity: errorMessage.checkValidity,
+    errorMessage,
     focus,
     value: latest.value
   }
@@ -134,6 +117,44 @@ function useField (options = {}) {
     window.requestAnimationFrame(() => {
       document.getElementById(id).focus()
     })
+  }
+}
+
+function useErrorSummary (options = {}) {
+  const { errorMessages, id } = options
+  const errorMessagesValues = errorMessages.map(({ value$ }) => value$)
+  const value$ = combineLatest(errorMessagesValues).pipe(
+    map((allErrors) => {
+      const errors = allErrors
+        .filter(({ invalid }) => invalid)
+      const count = errors.length
+      return { count, errors, id }
+    }),
+    tap(({ count, errors, id }) => {
+      if (count === 0) {
+        return
+      }
+      const focusTarget = count === 1 ? errors[0].target : id
+      window.requestAnimationFrame(() => {
+        const el = document.getElementById(focusTarget)
+        if (el) {
+          el.focus()
+        }
+      })
+    }),
+    shareReplay(1)
+  )
+  return {
+    value$,
+    checkValidity
+  }
+
+  function checkValidity () {
+    const validCount = errorMessages
+      .filter((errorMessage) => errorMessage.checkValidity())
+      .length
+    const isValid = validCount === errorMessages.length
+    return isValid
   }
 }
 
