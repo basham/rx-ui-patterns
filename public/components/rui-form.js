@@ -1,4 +1,4 @@
-import { combineLatest, of } from 'rxjs'
+import { combineLatest } from 'rxjs'
 import { map, shareReplay, tap } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
