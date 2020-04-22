@@ -1,7 +1,8 @@
 import { combineLatest } from 'rxjs'
+import { ajax } from 'rxjs/ajax'
 import { map, shareReplay, tap } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
-import { combineLatestObject } from '../util/rx.js'
+import { combineLatestObject, debug } from '../util/rx.js'
 import { useFocus, useMode, useSubscribe, useValue } from '../util/use.js'
 
 define('rui-form', (el) => {
@@ -11,6 +12,12 @@ define('rui-form', (el) => {
     renderComponent(el, renderForm)
   )
   subscribe(render$)
+
+  const req$ = ajax('/api').pipe(
+    debug('Res')
+  )
+  subscribe(req$)
+
   return unsubscribe
 })
 

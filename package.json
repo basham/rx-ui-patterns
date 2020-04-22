@@ -34,6 +34,7 @@
     "webDependencies": [
       "es-module-shims",
       "rxjs",
+      "rxjs/ajax",
       "rxjs/operators",
       "uce"
     ]
