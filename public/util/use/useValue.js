@@ -3,8 +3,8 @@ import { tap } from 'rxjs/operators'
 
 export function useValue (initValue = null, options = {}) {
   const { distinct = false, parseValue = (value) => value } = options
-  initValue = parseValue(initValue)
-  const subject$ = new BehaviorSubject(initValue)
+  const v = parseValue(initValue)
+  const subject$ = new BehaviorSubject(v)
   return {
     value$: subject$.asObservable(),
     set,
