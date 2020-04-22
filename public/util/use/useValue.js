@@ -7,35 +7,34 @@ export function useValue (initValue = null, options = {}) {
   const subject$ = new BehaviorSubject(initValue)
   return {
     value$: subject$.asObservable(),
-    get,
     set,
     tapSet,
     update,
-    value: get
+    value
   }
 
-  function get () {
-    return subject$.value
-  }
-
-  function set (value) {
-    const v = parseValue(value)
-    if (distinct && v === get()) {
+  function set (newValue) {
+    const v = parseValue(newValue)
+    if (distinct && v === value()) {
       return
     }
     subject$.next(v)
   }
 
-  function tapSet (selector = (value) => value) {
+  function tapSet (selector = (newValue) => newValue) {
     if (typeof selector !== 'function') {
       throw new Error('Argument must be a function.')
     }
-    return tap((value) => {
-      set(selector(value))
+    return tap((newValue) => {
+      set(selector(newValue))
     })
   }
 
   function update () {
-    set(get())
+    set(value())
+  }
+
+  function value () {
+    return subject$.value
   }
 }
