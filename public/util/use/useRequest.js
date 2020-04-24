@@ -1,45 +1,60 @@
 import { of } from 'rxjs'
 import { ajax } from 'rxjs/ajax'
-import { catchError, concatMap, exhaustMap, map, mergeMap, shareReplay, switchMap } from 'rxjs/operators'
+import { catchError, concatMap, distinctUntilChanged, exhaustMap, filter, map, mergeMap, shareReplay, startWith, switchMap } from 'rxjs/operators'
 import { useEvent } from './useEvent.js'
-import { useValue } from './useValue.js'
-
-export const CONCURRENT = mergeMap
-export const IGNORE = exhaustMap
-export const LATEST = switchMap
-export const QUEUE = concatMap
 
 export const strategies = {
-  CONCURRENT,
-  IGNORE,
-  LATEST,
-  QUEUE
+  concat: concatMap,
+  exhaust: exhaustMap,
+  merge: mergeMap,
+  switch: switchMap
 }
 
 export function useRequest (options = {}) {
-  const { strategy = IGNORE } = options
-  if (!Object.keys(strategies).includes(strategy)) {
-    throw new Error('Strategy option must be CONCURRENT, IGNORE, LATEST, or QUEUE.')
+  const { strategy = 'exhaust' } = options
+  const strategyOperator = strategies[strategy]
+  if (!strategyOperator) {
+    throw new Error('"options.strategy" must be "concat", "exhaust" (default), "merge", or "switch".')
   }
   const req = useEvent()
-  const res = useValue({ mode: 'idle' })
-  const response$ = req.value$.pipe(
-    strategy((options) => {
-      res.set({ mode: 'loading' })
-      return ajax(options).pipe(
+  const value$ = req.value$.pipe(
+    strategyOperator((options) =>
+      ajax(options).pipe(
+        startWith({ mode: 'loading' }),
         catchError((error) => of(error))
       )
-    }),
+    ),
     map((value) => {
+      if (value.mode === 'loading') {
+        return value
+      }
       const { status } = value.response
       const mode = status >= 400 ? 'error' : 'success'
-      return { ...value, mode }
+      return { mode, value }
     }),
-    res.tapSet(),
+    startWith({ mode: 'idle' }),
+    shareReplay(1)
+  )
+  const mode$ = value$.pipe(
+    map(({ mode }) => mode),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
+  const error$ = value$.pipe(
+    filter(({ mode }) => mode === 'error'),
+    map(({ value }) => value),
+    shareReplay(1)
+  )
+  const success$ = value$.pipe(
+    filter(({ mode }) => mode === 'success'),
+    map(({ value }) => value),
     shareReplay(1)
   )
   return {
-    response$,
+    error$,
+    mode$,
+    success$,
+    value$,
     get,
     request
   }
@@ -58,29 +73,4 @@ export function useRequest (options = {}) {
   function request (options) {
     req.emit(options)
   }
-}
-
-// useParallelRequest?
-// useSimultaneousRequest?
-export function useConcurrentRequest () {
-  return useRequest(CONCURRENT)
-}
-
-// useIgnoreUntilDoneRequest?
-// useAwaitRequest?
-// useDoNotDisturbRequest?
-// useSkipRequest?
-// useOmitRequest?
-export function useIgnoreRequest () {
-  return useRequest(IGNORE)
-}
-
-export function useLatestRequest () {
-  return useRequest(LATEST)
-}
-
-// useSeriesRequest?
-// useWaitRequest?
-export function useQueueRequest () {
-  return useRequest(QUEUE)
 }

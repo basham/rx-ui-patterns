@@ -114,6 +114,11 @@ input:focus {
   outline: none;
 }
 
+input[type="email"]:disabled,
+input[type="text"]:disabled {
+  color: var(--color-dark-gray);
+}
+
 button,
 .button {
   background-color: var(--color-white);
@@ -132,14 +137,20 @@ button,
   text-decoration: none;
 }
 
-button:hover,
-.button:hover {
+button:hover:not(:disabled),
+.button:hover:not(:disabled) {
   background-color: var(--color-lighter-gray);
 }
 
 button:active,
 .button:active {
   background-color: var(--color-light-gray);
+}
+
+button:disabled,
+.button:disabled {
+  color: var(--color-dark-gray);
+  cursor: default;
 }
 
 .button--icon {
@@ -239,6 +250,16 @@ input[type="checkbox"]:checked:focus + label [data-checkbox] {
 input[type="checkbox"]:checked:active + label [data-checkbox] {
   border-color: var(--color-blue);
   color: var(--color-light-gray);
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+legend {
+  padding: 0;
 }
 
 .box:not(:empty) {

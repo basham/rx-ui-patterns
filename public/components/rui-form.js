@@ -1,9 +1,8 @@
 import { combineLatest } from 'rxjs'
-import { ajax } from 'rxjs/ajax'
 import { map, shareReplay, tap } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
-import { combineLatestObject, debug } from '../util/rx.js'
-import { useFocus, useMode, useSubscribe, useValue } from '../util/use.js'
+import { combineLatestObject } from '../util/rx.js'
+import { useFocus, useMode, useRequest, useSubscribe, useValue } from '../util/use.js'
 
 define('rui-form', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
@@ -12,12 +11,6 @@ define('rui-form', (el) => {
     renderComponent(el, renderForm)
   )
   subscribe(render$)
-
-  const req$ = ajax('/api').pipe(
-    debug('Res')
-  )
-  subscribe(req$)
-
   return unsubscribe
 })
 
@@ -41,6 +34,7 @@ function useForm () {
     id: 'error-summary'
   })
   const focus = useFocus()
+  const submitRequest = useRequest()
   const value$ = combineLatestObject({
     mode: mode.value$,
     name: name.value$,
@@ -48,10 +42,14 @@ function useForm () {
     nameField: nameField.value$,
     emailField: emailField.value$,
     errorSummary: errorSummary.value$,
+    submitMode: submitRequest.mode$,
     cancel,
     edit,
     submit
   })
+
+  submitRequest.success$.subscribe(submitSuccess)
+
   return {
     value$
   }
@@ -70,6 +68,10 @@ function useForm () {
     if (!isValid) {
       return
     }
+    submitRequest.get('/api')
+  }
+
+  function submitSuccess () {
     name.set(nameField.value().value)
     email.set(emailField.value().value)
     toIdleMode()
@@ -228,8 +230,9 @@ function renderIdle (props) {
 }
 
 function renderEdit (props) {
-  const { cancel, mode, submit } = props
+  const { cancel, mode, submit, submitMode } = props
   const { nameField, emailField, errorSummary } = props
+  const isLoading = submitMode === 'loading'
   return html`
     <form
       autocomplete='off'
@@ -237,17 +240,23 @@ function renderEdit (props) {
       novalidate
       onsubmit=${submit}>
       ${renderErrorSummary(errorSummary)}
-      <h2>Edit</h2>
-      ${renderField(nameField)}
-      ${renderField(emailField)}
-      <div class='flex flex--gap-1 m-top-3'>
-        <button type='submit'>Save</button>
-        <button
-          onclick=${cancel}
-          type='button'>
-          Cancel
-        </button>
-      </div>
+      <fieldset .disabled=${isLoading}>
+        <legend>
+          <h2>Edit</h2>
+        </legend>
+        ${renderField(nameField)}
+        ${renderField(emailField)}
+        <div class='flex flex--gap-1 m-top-3'>
+          <button type='submit'>
+            ${isLoading ? 'Saving…' : 'Save'}
+          </button>
+          <button
+            onclick=${cancel}
+            type='button'>
+            Cancel
+          </button>
+        </div>
+      </fieldset>
     </form>
   `
 }
