@@ -1,8 +1,6 @@
-import { combineLatest } from 'rxjs'
-import { map, shareReplay, tap } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useFocus, useMode, useRequest, useSubscribe, useValue } from '../util/use.js'
+import { useErrorSummary, useField, useFocus, useMode, useRequest, useSubscribe, useValue } from '../util/use.js'
 
 define('rui-form', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
@@ -88,116 +86,6 @@ function useForm () {
     emailField.set(email.value())
     mode.set('edit')
     nameField.focus()
-  }
-}
-
-function useField (options = {}) {
-  const { id, label = '', required = true, type = 'text', value = '' } = options
-  const field = useValue(value)
-  const errorMessage = useErrorMessage({ id, label, type })
-  const latest = useValue()
-  const value$ = combineLatestObject({
-    change,
-    error: errorMessage.value$,
-    id,
-    label,
-    required,
-    type,
-    value: field.value$
-  }).pipe(
-    latest.tapSet(),
-    shareReplay(1)
-  )
-  return {
-    ...field,
-    error$: errorMessage.value$,
-    value$,
-    checkValidity: errorMessage.checkValidity,
-    errorMessage,
-    focus,
-    value: latest.value
-  }
-
-  function change (event) {
-    field.set(event.target.value)
-  }
-
-  function focus () {
-    window.requestAnimationFrame(() => {
-      document.getElementById(id).focus()
-    })
-  }
-}
-
-function useErrorSummary (options = {}) {
-  const { errorMessages, id } = options
-  const errorMessagesValues = errorMessages.map(({ value$ }) => value$)
-  const value$ = combineLatest(errorMessagesValues).pipe(
-    map((allErrors) => {
-      const errors = allErrors
-        .filter(({ invalid }) => invalid)
-      const count = errors.length
-      return { count, errors, id }
-    }),
-    tap(({ count, errors, id }) => {
-      if (count === 0) {
-        return
-      }
-      const focusTarget = count === 1 ? errors[0].target : id
-      window.requestAnimationFrame(() => {
-        const el = document.getElementById(focusTarget)
-        if (el) {
-          el.focus()
-        }
-      })
-    }),
-    shareReplay(1)
-  )
-  return {
-    value$,
-    checkValidity
-  }
-
-  function checkValidity () {
-    const validCount = errorMessages
-      .filter((errorMessage) => errorMessage.checkValidity())
-      .length
-    const isValid = validCount === errorMessages.length
-    return isValid
-  }
-}
-
-function useErrorMessage (options = {}) {
-  const { id, label, type } = options
-  const message = useValue('', { distinct: true })
-  const value$ = combineLatestObject({
-    id: `${id}-error-message`,
-    message: message.value$,
-    target: id
-  }).pipe(
-    map((value) => ({ ...value, invalid: !!value.message })),
-    shareReplay(1)
-  )
-  return {
-    value$,
-    checkValidity
-  }
-
-  function checkValidity () {
-    const { validity } = document.getElementById(id)
-    const text = getMessage(validity)
-    message.set(text)
-    return validity.valid
-  }
-
-  function getMessage (validity) {
-    if (validity.valueMissing) {
-      return `Enter ${label}`
-    }
-    if (validity.typeMismatch && type === 'email') {
-      return `${label} must be a valid address`
-    }
-    return ''
   }
 }
 
