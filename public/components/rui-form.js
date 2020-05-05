@@ -1,6 +1,7 @@
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
 import { useErrorSummary, useField, useFocus, useMode, useRequest, useSubscribe, useValue } from '../util/use.js'
+import { combineLatest } from 'rxjs'
 
 define('rui-form', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
@@ -26,6 +27,8 @@ function useForm () {
     type: 'email'
   })
   const fields = [nameField, emailField]
+  const fieldValues = fields.map(({ value$ }) => value$)
+  const fields$ = combineLatest(fieldValues)
   const errorMessages = fields.map(({ errorMessage }) => errorMessage)
   const errorSummary = useErrorSummary({
     errorMessages,
@@ -37,8 +40,7 @@ function useForm () {
     mode: mode.value$,
     name: name.value$,
     email: email.value$,
-    nameField: nameField.value$,
-    emailField: emailField.value$,
+    fields: fields$,
     errorSummary: errorSummary.value$,
     submitMode: submitRequest.mode$,
     cancel,
@@ -119,7 +121,7 @@ function renderIdle (props) {
 
 function renderEdit (props) {
   const { cancel, mode, submit, submitMode } = props
-  const { nameField, emailField, errorSummary } = props
+  const { fields, errorSummary } = props
   const isLoading = submitMode === 'loading'
   return html`
     <form
@@ -132,8 +134,7 @@ function renderEdit (props) {
         <legend>
           <h2>Edit</h2>
         </legend>
-        ${renderField(nameField)}
-        ${renderField(emailField)}
+        ${fields.map(renderField)}
         <div class='flex flex--gap-1 m-top-3'>
           <button type='submit'>
             ${isLoading ? 'Saving…' : 'Save'}
@@ -197,7 +198,7 @@ function renderField (props) {
         aria-invalid=${error.invalid}
         class='field__input'
         id=${id}
-        onkeyup=${change}
+        onchange=${change}
         .required=${required}
         type=${type}
         .value=${value} />
