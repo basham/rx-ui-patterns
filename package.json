@@ -21,14 +21,14 @@
   },
   "homepage": "https://github.com/basham/rx-ui-patterns#readme",
   "devDependencies": {
-    "es-dev-server": "1.46.5",
+    "es-dev-server": "1.48.1",
     "snowpack": "1.7.1",
     "standard": "14.3.3"
   },
   "dependencies": {
     "es-module-shims": "0.4.6",
     "rxjs": "6.5.5",
-    "uce": "0.9.0"
+    "uce": "0.10.2"
   },
   "snowpack": {
     "webDependencies": [
