@@ -23,7 +23,7 @@
   "devDependencies": {
     "es-dev-server": "1.48.1",
     "snowpack": "1.7.1",
-    "standard": "14.3.3"
+    "standard": "14.3.4"
   },
   "dependencies": {
     "es-module-shims": "0.4.6",
