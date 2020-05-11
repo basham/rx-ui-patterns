@@ -14,8 +14,6 @@ if ('serviceWorker' in navigator) {
     .then((reg) => {
       reg.update()
 
-      componentPaths.forEach((path) => {
-        import(path)
-      })
+      componentPaths.forEach((path) => import(path))
     })
 }
