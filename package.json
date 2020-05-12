@@ -8,7 +8,10 @@
     "snowpack": "snowpack --clean --optimize --no-source-map --dest ./public/web_modules/",
     "postinstall": "npm run build",
     "start": "es-dev-server --open --watch --app-index ./index.html --root-dir ./public/",
-    "test": "standard --fix && mocha --recursive './test/**/*.js' --require esm"
+    "test": "npm run test-style && npm run test-coverage",
+    "test-style": "standard --fix",
+    "test-spec": "mocha --require esm",
+    "test-coverage": "nyc --require esm --reporter=text --reporter=text-summary npm run test-spec"
   },
   "repository": {
     "type": "git",
@@ -25,6 +28,7 @@
     "es-dev-server": "1.48.1",
     "esm": "3.2.25",
     "mocha": "7.1.2",
+    "nyc": "15.0.1",
     "snowpack": "1.7.1",
     "standard": "14.3.4"
   },

@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { useMode } from '../public/util/use/useMode.js'
 
 describe('useMode', () => {
-  it('should only allow an array to be the first argument', () => {
+  it('allows only an array to be the first argument', () => {
     expect(() => useMode([])).to.not.throw('array')
     expect(() => useMode()).to.throw()
     expect(() => useMode(true)).to.throw()
@@ -13,24 +13,24 @@ describe('useMode', () => {
     expect(() => useMode(() => {})).to.throw()
   })
 
-  it('should not allow < 2 modes', () => {
+  it('does not allow < 2 modes', () => {
     expect(() => useMode([])).to.throw()
     expect(() => useMode(['a'])).to.throw()
   })
 
-  it('should default to the first mode', () => {
+  it('defaults to the first mode', () => {
     expect(useMode(['a', 'b']).value()).to.equal('a')
   })
 
-  it('should allow setting to a specific mode', () => {
+  it('allows setting to a specific mode', () => {
     expect(useMode(['a', 'b'], 'b').value()).to.equal('b')
   })
 
-  it('should not allow setting to an invalid mode', () => {
+  it('does not allow setting to an invalid mode', () => {
     expect(() => useMode(['a', 'b']).set('c')).to.throw()
   })
 
-  it('should allow setting to a valid mode', () => {
+  it('allows setting to a valid mode', () => {
     const mode = useMode(['a', 'b'])
     expect(() => mode.set('b')).to.not.throw()
     expect(mode.value()).to.equal('b')

@@ -20,9 +20,8 @@ export function useInt (initValue = 0) {
 }
 
 function parseValue (value) {
-  const v = parseInt(value)
-  if (isNaN(v)) {
+  if (parseInt(value) !== value) {
     throw new Error(`"${value}" must be an integer.`)
   }
-  return v
+  return value
 }
