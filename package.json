@@ -8,7 +8,7 @@
     "snowpack": "snowpack --clean --optimize --no-source-map --dest ./public/web_modules/",
     "postinstall": "npm run build",
     "start": "es-dev-server --open --watch --app-index ./index.html --root-dir ./public/",
-    "test": "standard --fix"
+    "test": "standard --fix && mocha --recursive './test/**/*.js' --require esm"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,10 @@
   },
   "homepage": "https://github.com/basham/rx-ui-patterns#readme",
   "devDependencies": {
+    "chai": "4.2.0",
     "es-dev-server": "1.48.1",
+    "esm": "3.2.25",
+    "mocha": "7.1.2",
     "snowpack": "1.7.1",
     "standard": "14.3.4"
   },
