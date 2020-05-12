@@ -7,7 +7,7 @@ describe('useInt', () => {
     expect(useInt().value()).to.equal(0)
   })
 
-  it('allows only integers', () => {
+  it('requires integers', () => {
     expect(() => useInt(1)).to.not.throw()
     expect(() => useInt(1.0)).to.not.throw()
     expect(() => useInt(1.5)).to.throw()
