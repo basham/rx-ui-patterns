@@ -3,6 +3,9 @@ import { tap } from 'rxjs/operators'
 
 export function useValue (initValue = null, options = {}) {
   const { distinct = false, parseValue = (value) => value } = options
+  if (typeof parseValue !== 'function') {
+    throw new Error('"options.parseValue" must be a function.')
+  }
   const v = parseValue(initValue)
   const subject$ = new BehaviorSubject(v)
   return {

@@ -4,24 +4,24 @@ import { BehaviorSubject, isObservable } from 'rxjs'
 import { useValue } from '../public/util/use/useValue.js'
 
 describe('useValue', () => {
-  it('exports an Observable, not BehaviorSubject', () => {
+  it('`value$`: exports an Observable, not BehaviorSubject', () => {
     const { value$ } = useValue()
     expect(isObservable(value$)).to.equal(true)
     expect(value$ instanceof BehaviorSubject).to.equal(false)
   })
 
-  it('gets the current value', () => {
+  it('`value()`: gets the current value', () => {
     const { value } = useValue('a')
     expect(value()).to.equal('a')
   })
 
-  it('sets a value', () => {
+  it('`set()`: sets a value', () => {
     const { set, value } = useValue('a')
     set('b')
     expect(value()).to.equal('b')
   })
 
-  it('emits all values by default', () => {
+  it('`options.distinct = false (default)`: emits all values', () => {
     const { value$, set } = useValue('a')
     const out = []
     const sub = value$.subscribe((v) => out.push(v))
@@ -34,7 +34,7 @@ describe('useValue', () => {
     sub.unsubscribe()
   })
 
-  it('emits all values if `options.distinct` is `false`', () => {
+  it('`options.distinct = false`: emits all values', () => {
     const { value$, set } = useValue('a', { distinct: false })
     const out = []
     const sub = value$.subscribe((v) => out.push(v))
@@ -47,7 +47,7 @@ describe('useValue', () => {
     sub.unsubscribe()
   })
 
-  it('does not emit repetitive values if `options.distinct` is `true`', () => {
+  it('`options.distinct = true`: does not emit repetitive values', () => {
     const { value$, set } = useValue('a', { distinct: true })
     const out = []
     const sub = value$.subscribe((v) => out.push(v))
@@ -60,16 +60,18 @@ describe('useValue', () => {
     sub.unsubscribe()
   })
 
-  it('emits the current value when calling `update()`', () => {
-    const { value$, update } = useValue('a')
-    const out = []
-    const sub = value$.subscribe((v) => out.push(v))
-    update()
-    expect(out.join('-')).to.equal('a-a')
-    sub.unsubscribe()
+  it('`options.parseValue`: must be a function', () => {
+    expect(() => useValue()).to.not.throw()
+    expect(() => useValue('a')).to.not.throw()
+    expect(() => useValue('a', { parseValue: () => {} })).to.not.throw()
+    expect(() => useValue('a', { parseValue: true })).to.throw()
+    expect(() => useValue('a', { parseValue: 1 })).to.throw()
+    expect(() => useValue('a', { parseValue: 'a' })).to.throw()
+    expect(() => useValue('a', { parseValue: {} })).to.throw()
+    expect(() => useValue('a', { parseValue: [] })).to.throw()
   })
 
-  it('sets the value with `tapSet()`', () => {
+  it('`tapSet()`: sets the value based on another Observable value', () => {
     const a = useValue('a')
     const b = useValue()
     const sub = a.value$.pipe(
@@ -79,7 +81,18 @@ describe('useValue', () => {
     sub.unsubscribe()
   })
 
-  it('sets the value with `tapSet()` and a selector function', () => {
+  it('`tapSet() first argument`: must be a function', () => {
+    const { tapSet } = useValue()
+    expect(() => tapSet()).to.not.throw()
+    expect(() => tapSet((value) => value)).to.not.throw()
+    expect(() => tapSet(true)).to.throw()
+    expect(() => tapSet(1)).to.throw()
+    expect(() => tapSet('a')).to.throw()
+    expect(() => tapSet({})).to.throw()
+    expect(() => tapSet([])).to.throw()
+  })
+
+  it('`tapSet()`: selects and sets the value based on another Observable value', () => {
     const a = useValue({ value: 'a' })
     const b = useValue()
     const sub = a.value$.pipe(
@@ -89,14 +102,12 @@ describe('useValue', () => {
     sub.unsubscribe()
   })
 
-  it('allows only selector functions with `tapSet()`', () => {
-    const { tapSet } = useValue()
-    expect(() => tapSet()).to.not.throw()
-    expect(() => tapSet((value) => value)).to.not.throw()
-    expect(() => tapSet(1)).to.throw()
-    expect(() => tapSet(true)).to.throw()
-    expect(() => tapSet('a')).to.throw()
-    expect(() => tapSet({})).to.throw()
-    expect(() => tapSet([])).to.throw()
+  it('`update()`: re-emits the current value', () => {
+    const { value$, update } = useValue('a')
+    const out = []
+    const sub = value$.subscribe((v) => out.push(v))
+    update()
+    expect(out.join('-')).to.equal('a-a')
+    sub.unsubscribe()
   })
 })
