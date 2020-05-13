@@ -22,7 +22,7 @@ function renderBoolean (props) {
   return html`
     <h1>useInt</h1>
     <p>Value: <strong>${value}</strong></p>
-    <div>
+    <div class='flex flex--gap-1'>
       <button onclick=${increment}>Increment</button>
       <button onclick=${decrement}>Decrement</button>
     </div>

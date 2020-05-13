@@ -23,7 +23,7 @@ function renderBoolean (props) {
   return html`
     <h1>useBoolean</h1>
     <p>Value: <strong>${value}</strong></p>
-    <div>
+    <div class='flex flex--gap-1'>
       <button onclick=${toggle}>Toggle</button>
       <button onclick=${toTrue}>True</button>
       <button onclick=${toFalse}>False</button>

@@ -37,4 +37,58 @@ describe('useMode', () => {
     expect(() => mode.set('b')).to.not.throw()
     expect(mode.value()).to.equal('b')
   })
+
+  it('moves to the next mode, without wrapping', () => {
+    const mode = useMode(['a', 'b'])
+    mode.next()
+    expect(mode.value()).to.equal('b')
+    mode.next()
+    expect(mode.value()).to.equal('b')
+  })
+
+  it('moves to the next mode, while wrapping', () => {
+    const mode = useMode(['a', 'b'])
+    mode.next({ wrap: true })
+    expect(mode.value()).to.equal('b')
+    mode.next({ wrap: true })
+    expect(mode.value()).to.equal('a')
+  })
+
+  it('moves to the previous mode, without wrapping', () => {
+    const mode = useMode(['a', 'b'], 'b')
+    mode.previous()
+    expect(mode.value()).to.equal('a')
+    mode.previous()
+    expect(mode.value()).to.equal('a')
+  })
+
+  it('moves to the previous mode, while wrapping', () => {
+    const mode = useMode(['a', 'b'], 'b')
+    mode.previous({ wrap: true })
+    expect(mode.value()).to.equal('a')
+    mode.previous({ wrap: true })
+    expect(mode.value()).to.equal('b')
+  })
+
+  it('next and previous "options" must be an object', () => {
+    const mode = useMode(['a', 'b'])
+    expect(() => mode.next({ wrap: true })).to.not.throw()
+    expect(() => mode.next({ wrap: false })).to.not.throw()
+    expect(() => mode.next({})).to.not.throw()
+    expect(() => mode.next()).to.not.throw()
+    expect(() => mode.next(1)).to.throw()
+    expect(() => mode.next('')).to.throw()
+    expect(() => mode.next(false)).to.throw()
+    expect(() => mode.next([])).to.throw()
+    expect(() => mode.next(() => {})).to.not.throw()
+    expect(() => mode.previous({ wrap: true })).to.not.throw()
+    expect(() => mode.previous({ wrap: false })).to.not.throw()
+    expect(() => mode.previous({})).to.not.throw()
+    expect(() => mode.previous()).to.not.throw()
+    expect(() => mode.previous(1)).to.throw()
+    expect(() => mode.previous('')).to.throw()
+    expect(() => mode.previous(false)).to.throw()
+    expect(() => mode.previous([])).to.throw()
+    expect(() => mode.previous(() => {})).to.not.throw()
+  })
 })

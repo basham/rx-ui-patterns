@@ -8,7 +8,8 @@ const pages = {
   boolean: ['useBoolean', html`<rui-boolean />`],
   form: ['Form', html`<rui-form />`],
   int: ['useInt', html`<rui-int />`],
-  lights: ['Lights', html`<rui-lights />`]
+  lights: ['Lights', html`<rui-lights />`],
+  mode: ['Mode', html`<rui-mode />`]
 }
 
 const url = new URL(window.location.href)

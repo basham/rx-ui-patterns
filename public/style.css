@@ -262,6 +262,13 @@ legend {
   padding: 0;
 }
 
+hr {
+  border-color: var(--color-light-gray);
+  border-style: solid;
+  border-width: calc(2rem/16) 0 0;
+  margin: var(--space-4) 0;
+}
+
 .box:not(:empty) {
   background-color: var(--color-white);
   border: calc(1rem/16) solid var(--color-light-gray);
