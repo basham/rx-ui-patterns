@@ -4,7 +4,7 @@
 // but it's a compromise to get the service worker "server" working
 // before the components mount.
 
-const components = 'boolean,examples,form,icon,lights,page'
+const components = 'boolean,examples,form,icon,int,lights,page'
 
 const componentPaths = components.split(',')
   .map((name) => `./components/rui-${name}.js`)

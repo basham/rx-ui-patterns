@@ -6,6 +6,7 @@ define('rui-examples', {
       <h1>Examples</h1>
       <ul>
         <li><a href='?p=boolean'>useBoolean</a></li>
+        <li><a href='?p=int'>useInt</a></li>
         <li><a href='?p=form'>Form</a></li>
         <li><a href='?p=lights'>Lights</a></li>
       </ul>

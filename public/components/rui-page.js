@@ -7,6 +7,7 @@ const pages = {
   default: [null, html`<rui-examples />`],
   boolean: ['useBoolean', html`<rui-boolean />`],
   form: ['Form', html`<rui-form />`],
+  int: ['useInt', html`<rui-int />`],
   lights: ['Lights', html`<rui-lights />`]
 }
 
