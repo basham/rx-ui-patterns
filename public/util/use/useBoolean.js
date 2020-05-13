@@ -1,7 +1,7 @@
 import { useValue } from './useValue.js'
 
 export function useBoolean (initValue = false) {
-  const source = useValue(initValue, { parseValue })
+  const source = useValue(initValue, { distinct: true, parseValue })
   return {
     ...source,
     toggle,
