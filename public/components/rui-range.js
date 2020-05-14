@@ -72,51 +72,40 @@ function renderRangeGrid (props) {
     <p>Use arrow keys to navigate around the grid.</p>
     <style>
       rui-range-grid .grid {
+        --border-width: calc(1rem/16);
+        --full-border-width: calc(var(--border-width) * 2);
         --size: 1rem;
-        display: grid;
-        grid-template-columns: repeat(var(--cols), var(--size));
-        grid-template-rows: repeat(var(--rows), var(--size));
-        width: fit-content;
+        --border-offset: calc(var(--size) - var(--border-width));
+        background-image:
+          linear-gradient(to right, var(--color-light-gray) var(--full-border-width), transparent 0),
+          linear-gradient(to bottom, var(--color-light-gray) var(--full-border-width), transparent 0);
+        background-position: var(--border-offset) var(--border-offset);
+        background-size: var(--size) var(--size);
+        border: var(--border-width) solid var(--color-light-gray);
+        box-sizing: content-box;
+        height: calc(var(--size) * var(--rows));
+        position: relative;
+        width: calc(var(--size) * var(--cols));
       }
 
       rui-range-grid .grid__cell {
-        border: calc(3rem/16) solid var(--color-light-gray);
-        height: 100%;
-        width: 100%;
-      }
-
-      rui-range-grid .grid__cell[data-selected="true"] {
         background-color: var(--color-blue);
-        border-color: var(--color-blue);
+        height: var(--size);
+        left: calc(var(--size) * (var(--x) - 1));
+        position: absolute;
+        top: calc(var(--size) * (var(--y) - 1));
+        width: var(--size);
       }
     </style>
     <div
       class='grid'
       onkeyup=${handler}
-      tabindex='0'
-      style=${`--cols: ${cols}; --rows: ${rows};`}>
-      ${range(1, rows).map((row) =>
-        html`${
-          range(1, cols).map((col) =>
-            html`
-              <div
-                class='grid__cell'
-                data-col=${col}
-                data-row=${row}
-                data-selected=${x === col && y === row}>
-              </div>
-            `
-          )
-        }`
-      )}
+      style=${`--cols: ${cols}; --rows: ${rows};`}
+      tabindex='0'>
+      <div
+        class='grid__cell'
+        style=${`--x: ${x}; --y: ${y};`}>
+      </div>
     </div>
   `
-}
-
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from
-function range (start, stop, step = 1) {
-  return Array.from(
-    { length: (stop - start) / step + 1 },
-    (_, i) => start + (i * step)
-  )
 }
