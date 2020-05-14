@@ -9,7 +9,8 @@ const pages = {
   form: ['Form', html`<rui-form />`],
   int: ['useInt', html`<rui-int />`],
   lights: ['Lights', html`<rui-lights />`],
-  mode: ['Mode', html`<rui-mode />`]
+  mode: ['Mode', html`<rui-mode />`],
+  range: ['Range', html`<rui-range />`]
 }
 
 const url = new URL(window.location.href)
