@@ -6,7 +6,6 @@ const [, ...pages] = PAGES
 define('rui-examples', {
   connected () {
     this.html`
-      <h1>Examples</h1>
       <ul>
         ${pages.map(renderLinkItem)}
       </ul>

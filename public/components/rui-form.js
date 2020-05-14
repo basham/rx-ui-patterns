@@ -93,7 +93,6 @@ function useForm () {
 
 function renderForm (props) {
   return html`
-    <h1>Form</h1>
     ${renderIdle(props)}
     ${renderEdit(props)}
   `

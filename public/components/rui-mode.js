@@ -44,10 +44,8 @@ define('rui-mode', (el) => {
 function renderMode (props) {
   const { handler, value } = props
   return html`
-    <h1>useMode</h1>
     <p>Mode values must be set to an option within a given sequence of options.</p>
     <p>This example is configured for 3 options (red, yellow, green).</p>
-    <p><a href='/components/rui-mode.js'>Source code</a></p>
     <hr />
     <p>Value: <strong>${value}</strong></p>
     <div class='flex flex--gap-1 m-top-2'>

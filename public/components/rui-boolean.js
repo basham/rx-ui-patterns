@@ -21,7 +21,6 @@ define('rui-boolean', (el) => {
 function renderBoolean (props) {
   const { value, toTrue, toFalse, toggle } = props
   return html`
-    <h1>useBoolean</h1>
     <p>Value: <strong>${value}</strong></p>
     <div class='flex flex--gap-1'>
       <button onclick=${toggle}>Toggle</button>
