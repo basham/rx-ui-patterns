@@ -1,17 +1,23 @@
-import { define } from 'uce'
+import { define, html } from 'uce'
+import { PAGES } from '../constants.js'
+
+const [, ...pages] = PAGES
 
 define('rui-examples', {
   connected () {
     this.html`
       <h1>Examples</h1>
       <ul>
-        <li><a href='?p=boolean'>useBoolean</a></li>
-        <li><a href='?p=int'>useInt</a></li>
-        <li><a href='?p=mode'>useMode</a></li>
-        <li><a href='?p=range'>useRange</a></li>
-        <li><a href='?p=form'>Form</a></li>
-        <li><a href='?p=lights'>Lights</a></li>
+        ${pages.map(renderLinkItem)}
       </ul>
     `
   }
 })
+
+function renderLinkItem (page) {
+  const { id, title } = page
+  const href = `?p=${id}`
+  return html`
+    <li><a href=${href}>${title}</a></li>
+  `
+}

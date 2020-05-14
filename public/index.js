@@ -3,8 +3,11 @@
 // It may be better to not use dynamic imports for components,
 // but it's a compromise to get the service worker "server" working
 // before the components mount.
+import { PAGES } from './constants.js'
 
-const components = 'boolean,examples,form,icon,int,lights,mode,page,range'
+const [, ...pages] = PAGES
+const pageIds = pages.map(({ id }) => id).join(',')
+const components = `examples,icon,page,${pageIds}`
 
 const componentPaths = components.split(',')
   .map((name) => `./components/rui-${name}.js`)

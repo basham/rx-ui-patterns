@@ -1,24 +1,11 @@
-import { define, html } from 'uce'
-
-const TITLE = 'Reactive UI Patterns'
-const DEFAULT_PAGE = 'default'
-
-const pages = {
-  default: [null, html`<rui-examples />`],
-  boolean: ['useBoolean', html`<rui-boolean />`],
-  form: ['Form', html`<rui-form />`],
-  int: ['useInt', html`<rui-int />`],
-  lights: ['Lights', html`<rui-lights />`],
-  mode: ['Mode', html`<rui-mode />`],
-  range: ['Range', html`<rui-range />`]
-}
+import { define } from 'uce'
+import { PAGES, TITLE } from '../constants.js'
 
 const url = new URL(window.location.href)
 const params = new URLSearchParams(url.search)
-const name = params.get('p')
-const hasPage = Object.keys(pages).includes(name)
-const page = hasPage ? name : DEFAULT_PAGE
-const [title, content] = pages[page]
+const pageId = params.get('p')
+const page = PAGES.find(({ id }) => id === pageId) || PAGES[0]
+const { title, content } = page
 
 document.title = [title, TITLE].filter((v) => v).join(' - ')
 
