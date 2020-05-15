@@ -41,6 +41,7 @@ function renderRangeGrid (props) {
   const { handler, cols, rows, x, y } = props
   return html`
     <p>Move focus to the grid. Use arrow keys to navigate.</p>
+    <hr />
     <style>
       rui-range-grid .grid {
         --border-width: calc(1rem/16);
@@ -69,7 +70,7 @@ function renderRangeGrid (props) {
       }
     </style>
     <div
-      class='grid m-top-2'
+      class='grid'
       onkeyup=${handler}
       style=${`--cols: ${cols}; --rows: ${rows};`}
       tabindex='0'>

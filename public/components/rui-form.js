@@ -93,6 +93,7 @@ function useForm () {
 
 function renderForm (props) {
   return html`
+    <hr />
     ${renderIdle(props)}
     ${renderEdit(props)}
   `
@@ -131,7 +132,7 @@ function renderEdit (props) {
       ${renderErrorSummary(errorSummary)}
       <fieldset .disabled=${isLoading}>
         <legend>
-          <h2>Edit</h2>
+          <h2 class='m-none'>Edit</h2>
         </legend>
         ${fields.map(renderField)}
         <div class='flex flex--gap-1 m-top-3'>

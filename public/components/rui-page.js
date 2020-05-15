@@ -20,7 +20,6 @@ define('rui-page', {
       <main class='content'>
         <h1>${title}</h1>
         <p><a href=${`/components/rui-${id}.js`}>Source code</a></p>
-        <hr />
         ${content}
       </main>
     `

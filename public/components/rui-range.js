@@ -20,6 +20,7 @@ define('rui-range', (el) => {
 function renderRange (props) {
   const { value, stepDown, stepUp } = props
   return html`
+    <hr />
     <p>Value: <strong>${value}</strong></p>
     <div class='flex flex--gap-1 m-top-2'>
       <button onclick=${stepDown}>Step Down</button>

@@ -154,6 +154,7 @@ function renderLights (props) {
   const { count, onCount } = lights
   const { selectedCount, hasSelections, isAllSelected } = lights
   return html`
+    <hr />
     <p class='m-none'>
       <span .hidden=${hasSelections}>
         ${onCount}/${count} ${powerLabels[ON]}
