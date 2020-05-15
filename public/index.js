@@ -5,9 +5,8 @@
 // before the components mount.
 import { PAGES } from './constants.js'
 
-const [, ...pages] = PAGES
-const pageIds = pages.map(({ id }) => id).join(',')
-const components = `examples,icon,page,${pageIds}`
+const pageIds = PAGES.map(({ id }) => id).join(',')
+const components = `icon,page,${pageIds}`
 
 const componentPaths = components.split(',')
   .map((name) => `./components/rui-${name}.js`)
@@ -16,7 +15,6 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./service-worker.js')
     .then((reg) => {
       reg.update()
-
       componentPaths.forEach((path) => import(path))
     })
 }
