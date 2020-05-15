@@ -40,6 +40,7 @@ define('rui-range-grid', (el) => {
 function renderRangeGrid (props) {
   const { handler, cols, rows, x, y } = props
   return html`
+    <p>This example demonstrates how to pair two <code>useRange()</code> instances to create a 2D coordinate.</p>
     <p>Move focus to the grid. Use arrow keys to navigate.</p>
     <hr />
     <style>
