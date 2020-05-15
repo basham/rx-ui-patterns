@@ -22,7 +22,7 @@ function renderBoolean (props) {
   const { value, toTrue, toFalse, toggle } = props
   return html`
     <p>Value: <strong>${value}</strong></p>
-    <div class='flex flex--gap-1'>
+    <div class='flex flex--gap-1 m-top-2'>
       <button onclick=${toggle}>Toggle</button>
       <button onclick=${toTrue}>True</button>
       <button onclick=${toFalse}>False</button>

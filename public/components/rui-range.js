@@ -21,7 +21,7 @@ function renderRange (props) {
   const { value, stepDown, stepUp } = props
   return html`
     <p>Value: <strong>${value}</strong></p>
-    <div class='flex flex--gap-1'>
+    <div class='flex flex--gap-1 m-top-2'>
       <button onclick=${stepDown}>Step Down</button>
       <button onclick=${stepUp}>Step Up</button>
     </div>

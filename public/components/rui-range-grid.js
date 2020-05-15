@@ -69,7 +69,7 @@ function renderRangeGrid (props) {
       }
     </style>
     <div
-      class='grid'
+      class='grid m-top-2'
       onkeyup=${handler}
       style=${`--cols: ${cols}; --rows: ${rows};`}
       tabindex='0'>

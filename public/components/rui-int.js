@@ -21,7 +21,7 @@ function renderBoolean (props) {
   const { value, increment, decrement } = props
   return html`
     <p>Value: <strong>${value}</strong></p>
-    <div class='flex flex--gap-1'>
+    <div class='flex flex--gap-1 m-top-2'>
       <button onclick=${increment}>Increment</button>
       <button onclick=${decrement}>Decrement</button>
     </div>
