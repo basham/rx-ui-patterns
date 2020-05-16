@@ -1,6 +1,8 @@
+import { BehaviorSubject } from 'rxjs'
 import { define, html, renderComponent } from '../util/dom.js'
+import { Range } from '../util/objects.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useRange, useSubscribe } from '../util/use.js'
+import { useSubscribe } from '../util/use.js'
 
 define('rui-range-grid', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
@@ -8,13 +10,29 @@ define('rui-range-grid', (el) => {
   const rows = 8
   const min = 1
   const step = 1
-  const x = useRange(min, { min, max: cols, step })
-  const y = useRange(min, { min, max: rows, step })
+  const value = 1
+  const wrap = true
+  const x = new Range({ min, max: cols, step, value, wrap })
+  const x$ = new BehaviorSubject(x)
+  const y = new Range({ min, max: rows, step, value, wrap })
+  const y$ = new BehaviorSubject(y)
   const arrowHandlers = {
-    ArrowDown: () => y.stepUp({ wrap: true }),
-    ArrowLeft: () => x.stepDown({ wrap: true }),
-    ArrowRight: () => x.stepUp({ wrap: true }),
-    ArrowUp: () => y.stepDown({ wrap: true })
+    ArrowDown: () => {
+      y.stepUp()
+      y$.next(y)
+    },
+    ArrowLeft: () => {
+      x.stepDown()
+      x$.next(x)
+    },
+    ArrowRight: () => {
+      x.stepUp()
+      x$.next(x)
+    },
+    ArrowUp: () => {
+      y.stepDown()
+      y$.next(y)
+    }
   }
   const handler = (event) => {
     const { key } = event
@@ -27,8 +45,8 @@ define('rui-range-grid', (el) => {
     handler,
     cols,
     rows,
-    x: x.value$,
-    y: y.value$
+    x: x$,
+    y: y$
   })
   const render$ = props$.pipe(
     renderComponent(el, renderRangeGrid)
@@ -40,7 +58,7 @@ define('rui-range-grid', (el) => {
 function renderRangeGrid (props) {
   const { handler, cols, rows, x, y } = props
   return html`
-    <p>This example demonstrates how to pair two <code>useRange()</code> instances to create a 2D coordinate.</p>
+    <p>This example demonstrates how to pair two <code>Range</code> objects to create a 2D coordinate.</p>
     <p>Move focus to the grid. Use arrow keys to navigate.</p>
     <hr />
     <style>
@@ -77,7 +95,7 @@ function renderRangeGrid (props) {
       tabindex='0'>
       <div
         class='grid__cell'
-        style=${`--x: ${x}; --y: ${y};`}>
+        style=${`--x: ${x.value}; --y: ${y.value};`}>
       </div>
     </div>
   `
