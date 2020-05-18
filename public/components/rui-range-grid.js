@@ -1,4 +1,5 @@
 import { BehaviorSubject } from 'rxjs'
+import { distinctUntilChanged, map, shareReplay } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { Range } from '../util/objects.js'
 import { combineLatestObject } from '../util/rx.js'
@@ -8,31 +9,12 @@ define('rui-range-grid', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
   const cols = 8
   const rows = 8
-  const min = 1
-  const step = 1
-  const value = 1
-  const wrap = true
-  const x = new Range({ min, max: cols, step, value, wrap })
-  const x$ = new BehaviorSubject(x)
-  const y = new Range({ min, max: rows, step, value, wrap })
-  const y$ = new BehaviorSubject(y)
+  const grid = createGrid({ cols, rows })
   const arrowHandlers = {
-    ArrowDown: () => {
-      y.stepUp()
-      y$.next(y)
-    },
-    ArrowLeft: () => {
-      x.stepDown()
-      x$.next(x)
-    },
-    ArrowRight: () => {
-      x.stepUp()
-      x$.next(x)
-    },
-    ArrowUp: () => {
-      y.stepDown()
-      y$.next(y)
-    }
+    ArrowDown: grid.down,
+    ArrowLeft: grid.left,
+    ArrowRight: grid.right,
+    ArrowUp: grid.up
   }
   const handler = (event) => {
     const { key } = event
@@ -45,8 +27,8 @@ define('rui-range-grid', (el) => {
     handler,
     cols,
     rows,
-    x: x$,
-    y: y$
+    x: grid.x$,
+    y: grid.y$
   })
   const render$ = props$.pipe(
     renderComponent(el, renderRangeGrid)
@@ -54,6 +36,53 @@ define('rui-range-grid', (el) => {
   subscribe(render$)
   return unsubscribe
 })
+
+function createGrid ({ cols, rows }) {
+  const min = 1
+  const step = 1
+  const value = 1
+  const wrap = true
+  const x = new Range({ min, max: cols, step, value, wrap })
+  const x$ = new BehaviorSubject(x)
+  const y = new Range({ min, max: rows, step, value, wrap })
+  const y$ = new BehaviorSubject(y)
+  return {
+    x$: mapKey(x$, 'value'),
+    y$: mapKey(y$, 'value'),
+    down,
+    left,
+    right,
+    up
+  }
+
+  function mapKey (source$, key) {
+    return source$.pipe(
+      map((source) => source[key]),
+      distinctUntilChanged(),
+      shareReplay(1)
+    )
+  }
+
+  function down () {
+    y.stepUp()
+    y$.next(y)
+  }
+
+  function left () {
+    x.stepDown()
+    x$.next(x)
+  }
+
+  function right () {
+    x.stepUp()
+    x$.next(x)
+  }
+
+  function up () {
+    y.stepDown()
+    y$.next(y)
+  }
+}
 
 function renderRangeGrid (props) {
   const { handler, cols, rows, x, y } = props
@@ -95,7 +124,7 @@ function renderRangeGrid (props) {
       tabindex='0'>
       <div
         class='grid__cell'
-        style=${`--x: ${x.value}; --y: ${y.value};`}>
+        style=${`--x: ${x}; --y: ${y};`}>
       </div>
     </div>
   `
