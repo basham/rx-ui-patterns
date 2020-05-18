@@ -8,8 +8,11 @@ export function useValue (initValue = null, options = {}) {
   }
   const v = parseValue(initValue)
   const subject$ = new BehaviorSubject(v)
+  const value$ = subject$.asObservable()
   return {
-    value$: subject$.asObservable(),
+    get$: value$,
+    value$,
+    get: value,
     set,
     tapSet,
     update,

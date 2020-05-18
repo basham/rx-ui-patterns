@@ -2,7 +2,7 @@ import { combineLatest, of } from 'rxjs'
 import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useBoolean, useInt, useMap, useSet, useSubscribe, useValue } from '../util/use.js'
+import { useSubscribe, useValue } from '../util/use.js'
 
 const ON = true
 const OFF = false
@@ -31,31 +31,32 @@ define('rui-lights', (el) => {
 
 function useLights () {
   const latest = useValue()
-  const lights = useMap()
-  const idCounter = useInt()
-  const selections = useSet()
-  const lights$ = lights.values$.pipe(
+  const lightsMap = useValue(new Map())
+  const idCounter = useValue(0)
+  const selections = useValue(new Set())
+  const lights$ = lightsMap.get$.pipe(
+    map((lightsMap) => [...lightsMap.values()]),
     switchMap((lights) => {
-      const values = lights.map((light) => light.value$)
+      const values = lights.map((light) => light.get$)
       return values.length ? combineLatest(values) : of([])
     })
   )
   const value$ = combineLatest(
     lights$,
-    selections.values$
+    selections.get$
   ).pipe(
-    map(([lights, selected]) => {
+    map(([lights, selections]) => {
       const count = lights.length
       const onCount = lights.filter(({ value }) => value === ON).length
       const offCount = lights.filter(({ value }) => value === OFF).length
       const isAllOn = onCount === count
       const isAllOff = offCount === count
-      const selectedCount = selected.length
+      const selectedCount = selections.size
       const hasSelections = selectedCount > 0
       const isAllSelected = selectedCount === count
       const all = lights.map((light) => ({
         ...light,
-        selected: selected.includes(light.id)
+        selected: selections.has(light.id)
       }))
       return {
         all, count, onCount, offCount, isAllOn, isAllOff, selectedCount, hasSelections, isAllSelected
@@ -78,7 +79,7 @@ function useLights () {
   }
   return {
     value$,
-    value: latest.value,
+    value: latest.get,
     ...methods,
     props
   }
@@ -90,44 +91,54 @@ function useLights () {
     const select = (e) => {
       const { checked } = e.target
       const method = checked ? 'add' : 'delete'
-      selections[method](id)
+      selections.get()[method](id)
+      selections.update()
     }
     const light = useLight(power, { id, key, label, select })
-    lights.set(id, light)
+    lightsMap.get().set(id, light)
+    lightsMap.update()
   }
 
   function deselectAll () {
-    selections.clear()
+    selections.get().clear()
+    selections.update()
   }
 
   function getId () {
-    return idCounter.increment()
+    const id = idCounter.get() + 1
+    idCounter.set(id)
+    return id
   }
 
   function removeSelected () {
-    selections.values().forEach((id) => lights.delete(id))
-    selections.clear()
+    const ids = [...selections.get().values()]
+    ids.forEach((id) => lightsMap.get().delete(id))
+    selections.get().clear()
+    lightsMap.update()
+    selections.update()
   }
 
   function selectAll () {
-    const ids = lights.values().map(({ id }) => id)
-    selections.add(...ids)
+    const ids = [...lightsMap.get().keys()]
+    ids.forEach((id) => selections.get().add(id))
+    selections.update()
   }
 
   function toggleAll () {
-    const { isAllOn } = latest.value()
+    const { isAllOn } = latest.get()
     const turn = isAllOn ? 'turnOff' : 'turnOn'
-    lights.values().forEach((light) => light[turn]())
+    const lights = [...lightsMap.get().values()]
+    lights.forEach((light) => light[turn]())
   }
 }
 
 function useLight (power = OFF, other = {}) {
   const latest = useValue()
-  const powered = useBoolean(power)
+  const powered = useValue(power)
   const methods = {
-    toggle: powered.toggle,
-    turnOn: powered.toTrue,
-    turnOff: powered.toFalse
+    toggle: () => powered.set(!powered.get()),
+    turnOn: () => powered.set(true),
+    turnOff: () => powered.set(false)
   }
   const value$ = powered.value$.pipe(
     distinctUntilChanged(),
@@ -143,6 +154,7 @@ function useLight (power = OFF, other = {}) {
   )
   return {
     ...other,
+    get$: value$,
     value$,
     value: latest.value,
     ...methods
