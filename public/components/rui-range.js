@@ -6,14 +6,14 @@ import { useSubscribe } from '../util/use.js'
 
 define('rui-range', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const range = new Range({ min: -5, max: 5, step: 1, value: 0 })
+  const range = new Range({ min: -5, max: 5, step: 1, value: 0, wrap: true })
   const range$ = new BehaviorSubject(range)
   const stepDown = () => {
-    range.stepDown({ wrap: true })
+    range.stepDown()
     range$.next(range)
   }
   const stepUp = () => {
-    range.stepUp({ wrap: true })
+    range.stepUp()
     range$.next(range)
   }
   const props$ = combineLatestObject({
@@ -32,7 +32,7 @@ function renderRange (props) {
   const { range, stepDown, stepUp } = props
   return html`
     <hr />
-    <p>Value: <strong>${range.get()}</strong></p>
+    <p>Value: <strong>${range.value}</strong></p>
     <div class='flex flex--gap-1 m-top-2'>
       <button onclick=${stepDown}>Step Down</button>
       <button onclick=${stepUp}>Step Up</button>
