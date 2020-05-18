@@ -23,7 +23,7 @@ Range.prototype = {
     this.wrap = wrap
     this.value = value
     internal(this).stepBase = min || value || 0
-    internal(this).config = config
+    internal(this).config = { max, min, step, value, wrap }
   },
   get max () {
     return internal(this).max
