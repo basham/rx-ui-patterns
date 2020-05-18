@@ -1,6 +1,8 @@
+import { BehaviorSubject } from 'rxjs'
 import { define, html, renderComponent } from '../util/dom.js'
+import { Mode } from '../util/objects.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useMode, useSubscribe } from '../util/use.js'
+import { useSubscribe } from '../util/use.js'
 
 const MODE_RED = '1. Red'
 const MODE_YELLOW = '2. Yellow'
@@ -13,15 +15,37 @@ const MODES = [
 
 define('rui-mode', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const mode = useMode(MODES)
+  const mode = new Mode({ modes: MODES })
+  const mode$ = new BehaviorSubject(mode)
   const methods = {
-    previous: mode.previous,
-    previousWrap: () => mode.previous({ wrap: true }),
-    next: mode.next,
-    nextWrap: () => mode.next({ wrap: true }),
-    toRed: () => mode.set(MODE_RED),
-    toYellow: () => mode.set(MODE_YELLOW),
-    toGreen: () => mode.set(MODE_GREEN)
+    previous: () => {
+      mode.previous()
+      mode$.next(mode)
+    },
+    previousWrap: () => {
+      mode.previous({ wrap: true })
+      mode$.next(mode)
+    },
+    next: () => {
+      mode.next()
+      mode$.next(mode)
+    },
+    nextWrap: () => {
+      mode.next({ wrap: true })
+      mode$.next(mode)
+    },
+    toRed: () => {
+      mode.value = MODE_RED
+      mode$.next(mode)
+    },
+    toYellow: () => {
+      mode.value = MODE_YELLOW
+      mode$.next(mode)
+    },
+    toGreen: () => {
+      mode.value = MODE_GREEN
+      mode$.next(mode)
+    }
   }
   const handler = (event) => {
     const { type } = event.target.dataset
@@ -32,7 +56,7 @@ define('rui-mode', (el) => {
   }
   const props$ = combineLatestObject({
     handler,
-    value: mode.value$
+    mode: mode$
   })
   const render$ = props$.pipe(
     renderComponent(el, renderMode)
@@ -42,12 +66,12 @@ define('rui-mode', (el) => {
 })
 
 function renderMode (props) {
-  const { handler, value } = props
+  const { handler, mode } = props
   return html`
     <p>Mode values must be set to an option within a given sequence of options.</p>
     <p>This example is configured for 3 options (red, yellow, green).</p>
     <hr />
-    <p>Value: <strong>${value}</strong></p>
+    <p>Value: <strong>${mode.value}</strong></p>
     <div class='flex flex--gap-1 m-top-2'>
       ${renderButton({ handler, label: 'Previous', type: 'previous' })}
       ${renderButton({ handler, label: 'Next', type: 'next' })}
