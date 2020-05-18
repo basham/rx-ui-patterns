@@ -1,7 +1,6 @@
-import { of } from 'rxjs'
+import { Subject, of } from 'rxjs'
 import { ajax } from 'rxjs/ajax'
 import { catchError, concatMap, distinctUntilChanged, exhaustMap, filter, map, mergeMap, shareReplay, startWith, switchMap } from 'rxjs/operators'
-import { useEvent } from './useEvent.js'
 
 export const strategies = {
   concat: concatMap,
@@ -16,8 +15,8 @@ export function useRequest (options = {}) {
   if (!strategyOperator) {
     throw new Error('"options.strategy" must be "concat", "exhaust" (default), "merge", or "switch".')
   }
-  const req = useEvent()
-  const value$ = req.value$.pipe(
+  const req$ = new Subject()
+  const value$ = req$.value$.pipe(
     strategyOperator((options) =>
       ajax(options).pipe(
         startWith({ mode: 'loading' }),
@@ -71,6 +70,6 @@ export function useRequest (options = {}) {
   }
 
   function request (options) {
-    req.emit(options)
+    req$.next(options)
   }
 }
