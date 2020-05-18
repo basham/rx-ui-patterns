@@ -7,9 +7,7 @@ import { useSubscribe } from '../util/use.js'
 
 define('rui-range-grid', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const cols = 8
-  const rows = 8
-  const grid = createGrid({ cols, rows })
+  const grid = createGrid({ cols: 8, rows: 8 })
   const arrowHandlers = {
     ArrowDown: grid.down,
     ArrowLeft: grid.left,
@@ -25,10 +23,7 @@ define('rui-range-grid', (el) => {
   }
   const props$ = combineLatestObject({
     handler,
-    cols,
-    rows,
-    x: grid.x$,
-    y: grid.y$
+    grid: grid.value$
   })
   const render$ = props$.pipe(
     renderComponent(el, renderRangeGrid)
@@ -42,50 +37,55 @@ function createGrid ({ cols, rows }) {
   const step = 1
   const value = 1
   const wrap = true
-  const x = new Range({ min, max: cols, step, value, wrap })
-  const x$ = new BehaviorSubject(x)
-  const y = new Range({ min, max: rows, step, value, wrap })
-  const y$ = new BehaviorSubject(y)
+  const x = createRange({ min, max: cols, step, value, wrap })
+  const y = createRange({ min, max: rows, step, value, wrap })
+  const value$ = combineLatestObject({
+    cols,
+    rows,
+    x: x.value$,
+    y: y.value$
+  })
   return {
-    x$: mapKey(x$, 'value'),
-    y$: mapKey(y$, 'value'),
-    down,
-    left,
-    right,
-    up
+    value$,
+    down: y.stepUp,
+    left: x.stepDown,
+    right: x.stepUp,
+    up: y.stepDown
+  }
+}
+
+function createRange (options) {
+  const range = new Range(options)
+  const range$ = new BehaviorSubject(range)
+  const value$ = range$.pipe(
+    map(({ value }) => value),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
+  return {
+    value$,
+    stepDown,
+    stepUp
   }
 
-  function mapKey (source$, key) {
-    return source$.pipe(
-      map((source) => source[key]),
-      distinctUntilChanged(),
-      shareReplay(1)
-    )
+  function stepDown () {
+    range.stepDown()
+    update()
   }
 
-  function down () {
-    y.stepUp()
-    y$.next(y)
+  function stepUp () {
+    range.stepUp()
+    update()
   }
 
-  function left () {
-    x.stepDown()
-    x$.next(x)
-  }
-
-  function right () {
-    x.stepUp()
-    x$.next(x)
-  }
-
-  function up () {
-    y.stepDown()
-    y$.next(y)
+  function update () {
+    range$.next(range)
   }
 }
 
 function renderRangeGrid (props) {
-  const { handler, cols, rows, x, y } = props
+  const { handler, grid } = props
+  const { cols, rows, x, y } = grid
   return html`
     <p>This example demonstrates how to pair two <code>Range</code> objects to create a 2D coordinate.</p>
     <p>Move focus to the grid. Use arrow keys to navigate.</p>
