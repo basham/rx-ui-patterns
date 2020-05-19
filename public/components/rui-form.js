@@ -86,8 +86,8 @@ function useForm () {
 
   function toEditMode () {
     lastFocus.set(document.activeElement)
-    nameField.set(name.value())
-    emailField.set(email.value())
+    nameField.set(name.get())
+    emailField.set(email.get())
     mode.get().value = 'edit'
     mode.update()
     nameField.focus()

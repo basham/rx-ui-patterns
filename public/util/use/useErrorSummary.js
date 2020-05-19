@@ -1,5 +1,6 @@
 import { combineLatest } from 'rxjs'
 import { map, shareReplay, tap } from 'rxjs/operators'
+import { focus } from '../dom.js'
 
 export function useErrorSummary (options = {}) {
   const { errorMessages, id } = options
@@ -15,13 +16,8 @@ export function useErrorSummary (options = {}) {
       if (count === 0) {
         return
       }
-      const focusTarget = count === 1 ? errors[0].target : id
-      window.requestAnimationFrame(() => {
-        const el = document.getElementById(focusTarget)
-        if (el) {
-          el.focus()
-        }
-      })
+      const target = count === 1 ? errors[0].target : id
+      focus(target)
     }),
     shareReplay(1)
   )
