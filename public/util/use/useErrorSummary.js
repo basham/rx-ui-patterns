@@ -28,7 +28,11 @@ export function useErrorSummary (options = {}) {
 
   function checkValidity () {
     const validCount = errorMessages
-      .filter((errorMessage) => errorMessage.checkValidity())
+      .filter((errorMessage) => {
+        const valid = errorMessage.get().checkValidity()
+        errorMessage.update()
+        return valid
+      })
       .length
     const isValid = validCount === errorMessages.length
     return isValid

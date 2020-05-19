@@ -133,7 +133,9 @@ function renderEdit (props) {
       novalidate
       onsubmit=${submit}>
       ${renderErrorSummary(errorSummary)}
-      <fieldset .disabled=${isLoading}>
+      <fieldset
+        class='m-top-4'
+        .disabled=${isLoading}>
         <legend>
           <h2 class='m-none'>Edit</h2>
         </legend>
@@ -177,12 +179,12 @@ function renderErrorSummary (props) {
 }
 
 function renderErrorSummaryItem (error) {
-  const { message, target } = error
+  const { message, targetId } = error
   return html`
     <li class='m-none'>
       <a
         class='link'
-        href=${`#${target}`}>
+        href=${`#${targetId}`}>
         ${message}
       </a>
     </li>

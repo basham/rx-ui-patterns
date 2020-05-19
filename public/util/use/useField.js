@@ -1,13 +1,18 @@
 import { shareReplay } from 'rxjs/operators'
 import { focus } from '../dom.js'
+import { ErrorMessage } from '../objects.js'
 import { combineLatestObject } from '../rx/combineLatestObject.js'
-import { useErrorMessage } from './useErrorMessage.js'
 import { useValue } from './useValue.js'
 
 export function useField (options = {}) {
   const { id, label = '', required = true, type = 'text', value = '' } = options
   const field = useValue(value)
-  const errorMessage = useErrorMessage({ id, label, type })
+  const errorMessage = useValue(new ErrorMessage({
+    id: `${id}-error-message`,
+    label,
+    targetId: id,
+    type
+  }))
   const latest = useValue()
   const value$ = combineLatestObject({
     change,
@@ -25,7 +30,10 @@ export function useField (options = {}) {
     ...field,
     error$: errorMessage.value$,
     value$,
-    checkValidity: errorMessage.checkValidity,
+    checkValidity: () => {
+      errorMessage.get().checkValidity()
+      errorMessage.update()
+    },
     errorMessage,
     focus: () => focus(id),
     value: latest.value
