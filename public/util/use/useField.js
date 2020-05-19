@@ -8,7 +8,6 @@ export function useField (options = {}) {
   const { id, label = '', required = true, type = 'text', value = '' } = options
   const field = useValue(value)
   const errorMessage = useValue(new ErrorMessage({
-    id: `${id}-error-message`,
     label,
     targetId: id,
     type

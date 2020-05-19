@@ -14,7 +14,8 @@ ErrorMessage.prototype = {
     if (!isObject(config)) {
       throw new Error('"config" must be an object.')
     }
-    const { id, label, targetId, type } = config
+    const { label, targetId, type } = config
+    const { id = `${targetId}-error-message` } = config
     this.id = id
     this.label = label
     this.message = ''
