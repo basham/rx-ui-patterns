@@ -1,15 +1,18 @@
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useBoolean, useSubscribe } from '../util/use.js'
+import { useSubscribe, useValue } from '../util/use.js'
 
 define('rui-boolean', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const bool = useBoolean()
+  const bool = useValue(false)
+  const toTrue = () => bool.set(true)
+  const toFalse = () => bool.set(false)
+  const toggle = () => bool.set(!bool.get())
   const props$ = combineLatestObject({
     value: bool.value$,
-    toTrue: bool.toTrue,
-    toFalse: bool.toFalse,
-    toggle: bool.toggle
+    toTrue,
+    toFalse,
+    toggle
   })
   const render$ = props$.pipe(
     renderComponent(el, renderBoolean)

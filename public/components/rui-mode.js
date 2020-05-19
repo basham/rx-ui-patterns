@@ -1,8 +1,7 @@
-import { BehaviorSubject } from 'rxjs'
 import { define, html, renderComponent } from '../util/dom.js'
 import { Mode } from '../util/objects.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useSubscribe } from '../util/use.js'
+import { useSubscribe, useValue } from '../util/use.js'
 
 const MODE_RED = '1. Red'
 const MODE_YELLOW = '2. Yellow'
@@ -15,36 +14,35 @@ const MODES = [
 
 define('rui-mode', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const mode = new Mode({ modes: MODES })
-  const mode$ = new BehaviorSubject(mode)
+  const mode = useValue(new Mode({ modes: MODES }))
   const methods = {
     previous: () => {
-      mode.previous()
-      mode$.next(mode)
+      mode.get().previous()
+      mode.update()
     },
     previousWrap: () => {
-      mode.previous({ wrap: true })
-      mode$.next(mode)
+      mode.get().previous({ wrap: true })
+      mode.update()
     },
     next: () => {
-      mode.next()
-      mode$.next(mode)
+      mode.get().next()
+      mode.update()
     },
     nextWrap: () => {
-      mode.next({ wrap: true })
-      mode$.next(mode)
+      mode.get().next({ wrap: true })
+      mode.update()
     },
     toRed: () => {
-      mode.value = MODE_RED
-      mode$.next(mode)
+      mode.get().value = MODE_RED
+      mode.update()
     },
     toYellow: () => {
-      mode.value = MODE_YELLOW
-      mode$.next(mode)
+      mode.get().value = MODE_YELLOW
+      mode.update()
     },
     toGreen: () => {
-      mode.value = MODE_GREEN
-      mode$.next(mode)
+      mode.get().value = MODE_GREEN
+      mode.update()
     }
   }
   const handler = (event) => {
@@ -56,7 +54,7 @@ define('rui-mode', (el) => {
   }
   const props$ = combineLatestObject({
     handler,
-    mode: mode$
+    mode: mode.value$
   })
   const render$ = props$.pipe(
     renderComponent(el, renderMode)

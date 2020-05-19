@@ -1,9 +1,8 @@
-import { BehaviorSubject } from 'rxjs'
 import { distinctUntilChanged, map, shareReplay } from 'rxjs/operators'
 import { define, html, renderComponent } from '../util/dom.js'
 import { Range } from '../util/objects.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useSubscribe } from '../util/use.js'
+import { useSubscribe, useValue } from '../util/use.js'
 
 define('rui-range-grid', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
@@ -55,9 +54,8 @@ function createGrid ({ cols, rows }) {
 }
 
 function createRange (options) {
-  const range = new Range(options)
-  const range$ = new BehaviorSubject(range)
-  const value$ = range$.pipe(
+  const range = useValue(new Range(options))
+  const value$ = range.value$.pipe(
     map(({ value }) => value),
     distinctUntilChanged(),
     shareReplay(1)
@@ -69,17 +67,13 @@ function createRange (options) {
   }
 
   function stepDown () {
-    range.stepDown()
-    update()
+    range.get().stepDown()
+    range.update()
   }
 
   function stepUp () {
-    range.stepUp()
-    update()
-  }
-
-  function update () {
-    range$.next(range)
+    range.get().stepUp()
+    range.update()
   }
 }
 

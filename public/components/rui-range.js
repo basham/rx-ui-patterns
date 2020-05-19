@@ -1,23 +1,22 @@
-import { BehaviorSubject } from 'rxjs'
 import { define, html, renderComponent } from '../util/dom.js'
 import { Range } from '../util/objects.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useSubscribe } from '../util/use.js'
+import { useSubscribe, useValue } from '../util/use.js'
 
 define('rui-range', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const range = new Range({ min: -5, max: 5, step: 1, value: 0, wrap: true })
-  const range$ = new BehaviorSubject(range)
+  const options = { min: -5, max: 5, step: 1, value: 0, wrap: true }
+  const range = useValue(new Range(options))
   const stepDown = () => {
-    range.stepDown()
-    range$.next(range)
+    range.get().stepDown()
+    range.update()
   }
   const stepUp = () => {
-    range.stepUp()
-    range$.next(range)
+    range.get().stepUp()
+    range.update()
   }
   const props$ = combineLatestObject({
-    range: range$,
+    range: range.value$,
     stepDown,
     stepUp
   })

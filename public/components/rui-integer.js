@@ -1,14 +1,16 @@
 import { define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useInt, useSubscribe } from '../util/use.js'
+import { useSubscribe, useValue } from '../util/use.js'
 
-define('rui-int', (el) => {
+define('rui-integer', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const bool = useInt()
+  const int = useValue(0)
+  const increment = () => int.set(int.get() + 1)
+  const decrement = () => int.set(int.get() - 1)
   const props$ = combineLatestObject({
-    value: bool.value$,
-    increment: bool.increment,
-    decrement: bool.decrement
+    value: int.value$,
+    increment,
+    decrement
   })
   const render$ = props$.pipe(
     renderComponent(el, renderBoolean)
