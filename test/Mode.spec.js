@@ -1,77 +1,81 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
-import { useMode } from '../public/util/use/useMode.js'
+import { Mode } from '../public/util/objects/Mode.js'
 
-describe('useMode', () => {
-  it('requires an array to be the first argument', () => {
-    expect(() => useMode([])).to.not.throw('array')
-    expect(() => useMode()).to.throw()
-    expect(() => useMode(true)).to.throw()
-    expect(() => useMode(2)).to.throw()
-    expect(() => useMode('a')).to.throw()
-    expect(() => useMode({})).to.throw()
-    expect(() => useMode(() => {})).to.throw()
+describe('Mode', () => {
+  it('requires an object to be the first argument', () => {
+    expect(() => new Mode({})).to.not.throw('object')
+    expect(() => new Mode()).to.throw()
+    expect(() => new Mode(true)).to.throw()
+    expect(() => new Mode(2)).to.throw()
+    expect(() => new Mode('a')).to.throw()
+    expect(() => new Mode(() => {})).to.throw()
   })
 
   it('requires 2 or more modes', () => {
-    expect(() => useMode([])).to.throw()
-    expect(() => useMode(['a'])).to.throw()
-    expect(() => useMode(['a', 'b'])).to.not.throw()
-    expect(() => useMode(['a', 'b', 'c'])).to.not.throw()
+    expect(() => new Mode({ modes: [] })).to.throw()
+    expect(() => new Mode({ modes: ['a'] })).to.throw()
+    expect(() => new Mode({ modes: ['a', 'b'] })).to.not.throw()
+    expect(() => new Mode({ modes: ['a', 'b', 'c'] })).to.not.throw()
   })
 
   it('defaults to the first mode', () => {
-    expect(useMode(['a', 'b']).value()).to.equal('a')
+    expect((new Mode({ modes: ['a', 'b'] })).value).to.equal('a')
   })
 
   it('sets to a specific mode during initialization', () => {
-    expect(useMode(['a', 'b'], 'b').value()).to.equal('b')
+    expect((new Mode({ modes: ['a', 'b'], value: 'b' })).value).to.equal('b')
   })
 
   it('does not set to an invalid mode', () => {
-    expect(() => useMode(['a', 'b']).set('c')).to.throw()
+    expect(() => {
+      const mode = new Mode({ modes: ['a', 'b'] })
+      mode.value = 'c'
+    }).to.throw()
   })
 
   it('sets to a valid mode', () => {
-    const mode = useMode(['a', 'b'])
-    expect(() => mode.set('b')).to.not.throw()
-    expect(mode.value()).to.equal('b')
+    const mode = new Mode({ modes: ['a', 'b'] })
+    expect(() => {
+      mode.value = 'b'
+    }).to.not.throw()
+    expect(mode.value).to.equal('b')
   })
 
   it('moves to the next mode, without wrapping', () => {
-    const mode = useMode(['a', 'b'])
+    const mode = new Mode({ modes: ['a', 'b'] })
     mode.next()
-    expect(mode.value()).to.equal('b')
+    expect(mode.value).to.equal('b')
     mode.next()
-    expect(mode.value()).to.equal('b')
+    expect(mode.value).to.equal('b')
   })
 
   it('moves to the next mode, while wrapping', () => {
-    const mode = useMode(['a', 'b'])
+    const mode = new Mode({ modes: ['a', 'b'] })
     mode.next({ wrap: true })
-    expect(mode.value()).to.equal('b')
+    expect(mode.value).to.equal('b')
     mode.next({ wrap: true })
-    expect(mode.value()).to.equal('a')
+    expect(mode.value).to.equal('a')
   })
 
   it('moves to the previous mode, without wrapping', () => {
-    const mode = useMode(['a', 'b'], 'b')
+    const mode = new Mode({ modes: ['a', 'b'], value: 'b' })
     mode.previous()
-    expect(mode.value()).to.equal('a')
+    expect(mode.value).to.equal('a')
     mode.previous()
-    expect(mode.value()).to.equal('a')
+    expect(mode.value).to.equal('a')
   })
 
   it('moves to the previous mode, while wrapping', () => {
-    const mode = useMode(['a', 'b'], 'b')
+    const mode = new Mode({ modes: ['a', 'b'], value: 'b' })
     mode.previous({ wrap: true })
-    expect(mode.value()).to.equal('a')
+    expect(mode.value).to.equal('a')
     mode.previous({ wrap: true })
-    expect(mode.value()).to.equal('b')
+    expect(mode.value).to.equal('b')
   })
 
   it('next and previous "options" must be an object', () => {
-    const mode = useMode(['a', 'b'])
+    const mode = new Mode({ modes: ['a', 'b'] })
     expect(() => mode.next({ wrap: true })).to.not.throw()
     expect(() => mode.next({ wrap: false })).to.not.throw()
     expect(() => mode.next({})).to.not.throw()
