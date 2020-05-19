@@ -16,7 +16,7 @@ export function useRequest (options = {}) {
     throw new Error('"options.strategy" must be "concat", "exhaust" (default), "merge", or "switch".')
   }
   const req$ = new Subject()
-  const value$ = req$.value$.pipe(
+  const value$ = req$.pipe(
     strategyOperator((options) =>
       ajax(options).pipe(
         startWith({ mode: 'loading' }),

@@ -1,4 +1,5 @@
 import { shareReplay } from 'rxjs/operators'
+import { focus } from '../dom.js'
 import { combineLatestObject } from '../rx/combineLatestObject.js'
 import { useErrorMessage } from './useErrorMessage.js'
 import { useValue } from './useValue.js'
@@ -26,17 +27,11 @@ export function useField (options = {}) {
     value$,
     checkValidity: errorMessage.checkValidity,
     errorMessage,
-    focus,
+    focus: () => focus(id),
     value: latest.value
   }
 
   function change (event) {
     field.set(event.target.value)
-  }
-
-  function focus () {
-    window.requestAnimationFrame(() => {
-      document.getElementById(id).focus()
-    })
   }
 }

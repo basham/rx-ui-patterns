@@ -1,6 +1,7 @@
-import { define, html, renderComponent } from '../util/dom.js'
+import { define, focus, html, renderComponent } from '../util/dom.js'
+import { Mode } from '../util/objects.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useErrorSummary, useField, useFocus, useMode, useRequest, useSubscribe, useValue } from '../util/use.js'
+import { useErrorSummary, useField, useRequest, useSubscribe, useValue } from '../util/use.js'
 import { combineLatest } from 'rxjs'
 
 define('rui-form', (el) => {
@@ -14,7 +15,7 @@ define('rui-form', (el) => {
 })
 
 function useForm () {
-  const mode = useMode(['idle', 'edit'])
+  const mode = useValue(new Mode({ modes: ['idle', 'edit'] }))
   const name = useValue('Chris')
   const email = useValue('me@example.com')
   const nameField = useField({
@@ -34,7 +35,7 @@ function useForm () {
     errorMessages,
     id: 'error-summary'
   })
-  const focus = useFocus()
+  const lastFocus = useValue()
   const submitRequest = useRequest()
   const value$ = combineLatestObject({
     mode: mode.value$,
@@ -78,15 +79,17 @@ function useForm () {
   }
 
   function toIdleMode () {
-    mode.set('idle')
-    focus.refocus()
+    mode.get().value = 'idle'
+    mode.update()
+    focus(lastFocus.get())
   }
 
   function toEditMode () {
-    focus.remember()
+    lastFocus.set(document.activeElement)
     nameField.set(name.value())
     emailField.set(email.value())
-    mode.set('edit')
+    mode.get().value = 'edit'
+    mode.update()
     nameField.focus()
   }
 }
@@ -103,7 +106,7 @@ function renderIdle (props) {
   const { edit, mode } = props
   const { name, email } = props
   return html`
-    <dl .hidden=${mode !== 'idle'}>
+    <dl .hidden=${mode.value !== 'idle'}>
       <dt>Profile</dt>
       <dd>${name}</dd>
       <dd>${email}</dd>
@@ -126,7 +129,7 @@ function renderEdit (props) {
   return html`
     <form
       autocomplete='off'
-      .hidden=${mode !== 'edit'}
+      .hidden=${mode.value !== 'edit'}
       novalidate
       onsubmit=${submit}>
       ${renderErrorSummary(errorSummary)}

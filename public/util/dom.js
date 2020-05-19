@@ -19,3 +19,15 @@ export function define (name, def, other = {}) {
 export const renderComponent = renderComponentFactory(
   ({ element, props, renderer }) => element.html`${renderer(props)}`
 )
+
+export function focus (elementOrId) {
+  window.requestAnimationFrame(() => {
+    const element = typeof elementOrId === 'string'
+      ? document.getElementById(elementOrId)
+      : elementOrId
+    if (!(element instanceof window.HTMLElement)) {
+      return
+    }
+    element.focus()
+  })
+}
