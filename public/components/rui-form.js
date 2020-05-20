@@ -1,8 +1,9 @@
-import { define, focus, html, renderComponent } from '../util/dom.js'
-import { Mode } from '../util/objects.js'
-import { combineLatestObject } from '../util/rx.js'
-import { useErrorSummary, useField, useRequest, useSubscribe, useValue } from '../util/use.js'
 import { combineLatest } from 'rxjs'
+import { map, shareReplay } from 'rxjs/operators'
+import { define, focus, html, renderComponent } from '../util/dom.js'
+import { Field, Mode } from '../util/objects.js'
+import { combineLatestObject } from '../util/rx.js'
+import { useErrorSummary, useRequest, useSubscribe, useValue } from '../util/use.js'
 
 define('rui-form', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
@@ -18,21 +19,20 @@ function useForm () {
   const mode = useValue(new Mode({ modes: ['idle', 'edit'] }))
   const name = useValue('Chris')
   const email = useValue('me@example.com')
-  const nameField = useField({
+  const nameField = createField({
     id: 'name-field',
     label: 'Name'
   })
-  const emailField = useField({
+  const emailField = createField({
     id: 'email-field',
     label: 'Email',
     type: 'email'
   })
   const fields = [nameField, emailField]
-  const fieldValues = fields.map(({ value$ }) => value$)
-  const fields$ = combineLatest(fieldValues)
-  const errorMessages = fields.map(({ errorMessage }) => errorMessage)
+  const fieldProps = fields.map(({ props$ }) => props$)
+  const fields$ = combineLatest(fieldProps)
   const errorSummary = useErrorSummary({
-    errorMessages,
+    fields,
     id: 'error-summary'
   })
   const lastFocus = useValue()
@@ -73,8 +73,8 @@ function useForm () {
   }
 
   function submitSuccess () {
-    name.set(nameField.value().value)
-    email.set(emailField.value().value)
+    name.set(nameField.get().value)
+    email.set(emailField.get().value)
     toIdleMode()
   }
 
@@ -86,11 +86,29 @@ function useForm () {
 
   function toEditMode () {
     lastFocus.set(document.activeElement)
-    nameField.set(name.get())
-    emailField.set(email.get())
+    nameField.get().value = name.get()
+    nameField.update()
+    emailField.get().value = email.get()
+    emailField.update()
     mode.get().value = 'edit'
     mode.update()
-    nameField.focus()
+    focus(nameField.get().id)
+  }
+}
+
+function createField (options) {
+  const field = useValue(new Field(options))
+  const change = (event) => {
+    field.get().change(event)
+    field.update()
+  }
+  const props$ = field.value$.pipe(
+    map((field) => ({ change, field })),
+    shareReplay(1)
+  )
+  return {
+    ...field,
+    props$
   }
 }
 
@@ -192,7 +210,8 @@ function renderErrorSummaryItem (error) {
 }
 
 function renderField (props) {
-  const { change, error, id, label, required, type, value } = props
+  const { change, field } = props
+  const { error, id, label, required, type, value } = field
   return html`
     <div class='field m-top-3'>
       <label for=${id}>
