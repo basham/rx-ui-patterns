@@ -1,6 +1,7 @@
 export * from './useAttribute.js'
 export * from './useErrorSummary.js'
 export * from './useField.js'
+export * from './useMode.js'
 export * from './useRange.js'
 export * from './useRequest.js'
 export * from './useSubscribe.js'

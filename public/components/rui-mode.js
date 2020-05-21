@@ -1,7 +1,6 @@
 import { define, html, renderComponent } from '../util/dom.js'
-import { Mode } from '../util/objects.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useSubscribe, useValue } from '../util/use.js'
+import { useMode, useSubscribe } from '../util/use.js'
 
 const MODE_RED = '1. Red'
 const MODE_YELLOW = '2. Yellow'
@@ -14,36 +13,15 @@ const MODES = [
 
 define('rui-mode', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
-  const mode = useValue(new Mode({ modes: MODES }))
+  const mode = useMode({ modes: MODES })
   const methods = {
-    previous: () => {
-      mode.get().previous()
-      mode.update()
-    },
-    previousWrap: () => {
-      mode.get().previous({ wrap: true })
-      mode.update()
-    },
-    next: () => {
-      mode.get().next()
-      mode.update()
-    },
-    nextWrap: () => {
-      mode.get().next({ wrap: true })
-      mode.update()
-    },
-    toRed: () => {
-      mode.get().value = MODE_RED
-      mode.update()
-    },
-    toYellow: () => {
-      mode.get().value = MODE_YELLOW
-      mode.update()
-    },
-    toGreen: () => {
-      mode.get().value = MODE_GREEN
-      mode.update()
-    }
+    previous: () => mode.previous(),
+    previousWrap: () => mode.previous({ wrap: true }),
+    next: () => mode.next(),
+    nextWrap: () => mode.next({ wrap: true }),
+    toRed: () => mode.set(MODE_RED),
+    toYellow: () => mode.set(MODE_YELLOW),
+    toGreen: () => mode.set(MODE_GREEN)
   }
   const handler = (event) => {
     const { type } = event.target.dataset
@@ -54,7 +32,7 @@ define('rui-mode', (el) => {
   }
   const props$ = combineLatestObject({
     handler,
-    mode: mode.value$
+    mode: mode.value.value$
   })
   const render$ = props$.pipe(
     renderComponent(el, renderMode)
@@ -69,7 +47,7 @@ function renderMode (props) {
     <p>Mode values must be set to an option within a given sequence of options.</p>
     <p>This example is configured for 3 options (red, yellow, green).</p>
     <hr />
-    <p>Value: <strong>${mode.value}</strong></p>
+    <p>Value: <strong>${mode}</strong></p>
     <div class='flex flex--gap-1 m-top-2'>
       ${renderButton({ handler, label: 'Previous', type: 'previous' })}
       ${renderButton({ handler, label: 'Next', type: 'next' })}

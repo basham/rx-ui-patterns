@@ -1,9 +1,9 @@
 import { combineLatest } from 'rxjs'
 import { map, shareReplay } from 'rxjs/operators'
 import { define, focus, html, renderComponent } from '../util/dom.js'
-import { Field, Mode } from '../util/objects.js'
+import { Field } from '../util/objects.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useErrorSummary, useRequest, useSubscribe, useValue } from '../util/use.js'
+import { useErrorSummary, useMode, useRequest, useSubscribe, useValue } from '../util/use.js'
 
 define('rui-form', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
@@ -16,7 +16,7 @@ define('rui-form', (el) => {
 })
 
 function useForm () {
-  const mode = useValue(new Mode({ modes: ['idle', 'edit'] }))
+  const mode = useMode({ modes: ['idle', 'edit'] })
   const name = useValue('Chris')
   const email = useValue('me@example.com')
   const nameField = createField({
@@ -38,7 +38,7 @@ function useForm () {
   const lastFocus = useValue()
   const submitRequest = useRequest()
   const value$ = combineLatestObject({
-    mode: mode.value$,
+    mode: mode.value.value$,
     name: name.value$,
     email: email.value$,
     fields: fields$,
@@ -79,8 +79,7 @@ function useForm () {
   }
 
   function toIdleMode () {
-    mode.get().value = 'idle'
-    mode.update()
+    mode.set('idle')
     focus(lastFocus.get())
   }
 
@@ -90,8 +89,7 @@ function useForm () {
     nameField.update()
     emailField.get().value = email.get()
     emailField.update()
-    mode.get().value = 'edit'
-    mode.update()
+    mode.set('edit')
     focus(nameField.get().id)
   }
 }
@@ -124,7 +122,7 @@ function renderIdle (props) {
   const { edit, mode } = props
   const { name, email } = props
   return html`
-    <dl .hidden=${mode.value !== 'idle'}>
+    <dl .hidden=${mode !== 'idle'}>
       <dt>Profile</dt>
       <dd>${name}</dd>
       <dd>${email}</dd>
@@ -147,7 +145,7 @@ function renderEdit (props) {
   return html`
     <form
       autocomplete='off'
-      .hidden=${mode.value !== 'edit'}
+      .hidden=${mode !== 'edit'}
       novalidate
       onsubmit=${submit}>
       ${renderErrorSummary(errorSummary)}
