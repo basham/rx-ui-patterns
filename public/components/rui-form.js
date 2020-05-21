@@ -1,9 +1,7 @@
 import { combineLatest } from 'rxjs'
-import { map, shareReplay } from 'rxjs/operators'
 import { define, focus, html, renderComponent } from '../util/dom.js'
-import { Field } from '../util/objects.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useErrorSummary, useMode, useRequest, useSubscribe, useValue } from '../util/use.js'
+import { useErrorSummary, useField, useMode, useRequest, useSubscribe, useValue } from '../util/use.js'
 
 define('rui-form', (el) => {
   const [subscribe, unsubscribe] = useSubscribe()
@@ -19,17 +17,17 @@ function useForm () {
   const mode = useMode({ modes: ['idle', 'edit'] })
   const name = useValue('Chris')
   const email = useValue('me@example.com')
-  const nameField = createField({
+  const nameField = useField({
     id: 'name-field',
     label: 'Name'
   })
-  const emailField = createField({
+  const emailField = useField({
     id: 'email-field',
     label: 'Email',
     type: 'email'
   })
   const fields = [nameField, emailField]
-  const fieldProps = fields.map(({ props$ }) => props$)
+  const fieldProps = fields.map(({ value$ }) => value$)
   const fields$ = combineLatest(fieldProps)
   const errorSummary = useErrorSummary({
     fields,
@@ -73,8 +71,8 @@ function useForm () {
   }
 
   function submitSuccess () {
-    name.set(nameField.get().value)
-    email.set(emailField.get().value)
+    name.set(nameField.get())
+    email.set(emailField.get())
     toIdleMode()
   }
 
@@ -85,28 +83,10 @@ function useForm () {
 
   function toEditMode () {
     lastFocus.set(document.activeElement)
-    nameField.get().value = name.get()
-    nameField.update()
-    emailField.get().value = email.get()
-    emailField.update()
+    nameField.set(name.get())
+    emailField.set(email.get())
     mode.set('edit')
-    focus(nameField.get().id)
-  }
-}
-
-function createField (options) {
-  const field = useValue(new Field(options))
-  const change = (event) => {
-    field.get().change(event)
-    field.update()
-  }
-  const props$ = field.value$.pipe(
-    map((field) => ({ change, field })),
-    shareReplay(1)
-  )
-  return {
-    ...field,
-    props$
+    focus(nameField.value().id)
   }
 }
 
@@ -208,8 +188,7 @@ function renderErrorSummaryItem (error) {
 }
 
 function renderField (props) {
-  const { change, field } = props
-  const { error, id, label, required, type, value } = field
+  const { change, error, id, label, required, type, value } = props
   return html`
     <div class='field m-top-3'>
       <label for=${id}>

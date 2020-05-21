@@ -1,4 +1,5 @@
 export * from './useAttribute.js'
+export * from './useErrorMessage.js'
 export * from './useErrorSummary.js'
 export * from './useField.js'
 export * from './useMode.js'

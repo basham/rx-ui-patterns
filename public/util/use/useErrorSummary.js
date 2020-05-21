@@ -17,8 +17,8 @@ export function useErrorSummary (options = {}) {
       if (count === 0) {
         return
       }
-      const target = count === 1 ? errors[0].target : id
-      focus(target)
+      const targetId = count === 1 ? errors[0].targetId : id
+      focus(targetId)
     }),
     shareReplay(1)
   )
@@ -29,11 +29,7 @@ export function useErrorSummary (options = {}) {
 
   function checkValidity () {
     const validCount = fields
-      .filter((field) => {
-        const valid = field.get().checkValidity()
-        field.update()
-        return valid
-      })
+      .filter((field) => field.checkValidity())
       .length
     const isValid = validCount === fields.length
     return isValid
