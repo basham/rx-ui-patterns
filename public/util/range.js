@@ -1,4 +1,5 @@
-import { isNumber, isObject } from './objects/util.js'
+import { isNumber } from './number.js'
+import { isObject } from './object.js'
 
 const STEP_UP = 1
 const STEP_DOWN = -1

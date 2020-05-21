@@ -1,4 +1,5 @@
-import { isObject, namespace } from './util.js'
+import { namespace } from './util.js'
+import { isObject } from '../object.js'
 
 const internal = namespace()
 

@@ -1,4 +1,4 @@
-import { isObject } from './objects/util.js'
+import { isObject } from './object.js'
 
 const DIRECTION_NEXT = 1
 const DIRECTION_PREVIOUS = -1
