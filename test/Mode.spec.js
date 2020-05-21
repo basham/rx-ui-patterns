@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { nextMode, parseOptions, previousMode, setMode } from '../public/util/mode.js'
 
-describe('Mode', () => {
+describe('mode', () => {
   it('requires "options" to be an object', () => {
     expect(() => parseOptions({})).to.not.throw('object')
     expect(() => parseOptions()).to.throw()
