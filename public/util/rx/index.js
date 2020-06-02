@@ -1,4 +1,5 @@
 export * from './animationFrame.js'
+export * from './auditMap.js'
 export * from './combineLatestObject.js'
 export * from './debug.js'
 export * from './distinctUntilObjectChanged.js'

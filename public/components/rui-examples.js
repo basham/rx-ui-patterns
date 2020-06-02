@@ -1,5 +1,6 @@
 import { define, html } from 'uce'
 import { PAGES } from '../constants.js'
+import '../util/rx/auditMap.test.js'
 
 const [, ...pages] = PAGES
 
