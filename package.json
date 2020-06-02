@@ -4,8 +4,7 @@
   "description": "Patterns for UI development with RxJS",
   "main": "index.js",
   "scripts": {
-    "build": "npm run snowpack",
-    "snowpack": "snowpack --clean --optimize --no-source-map --dest ./public/web_modules/",
+    "build": "snowpack install",
     "postinstall": "npm run build",
     "start": "es-dev-server --open --watch --app-index ./index.html --root-dir ./public/",
     "test": "npm run test-style && npm run test-coverage",
@@ -25,25 +24,25 @@
   "homepage": "https://github.com/basham/rx-ui-patterns#readme",
   "devDependencies": {
     "chai": "4.2.0",
-    "es-dev-server": "1.50.8",
+    "es-dev-server": "1.54.0",
     "esm": "3.2.25",
-    "mocha": "7.1.2",
-    "nyc": "15.0.1",
-    "snowpack": "1.7.1",
+    "mocha": "7.2.0",
+    "nyc": "15.1.0",
+    "snowpack": "2.2.1",
     "standard": "14.3.4"
   },
   "dependencies": {
     "es-module-shims": "0.4.6",
     "rxjs": "6.5.5",
-    "uce": "0.12.0"
+    "uce": "0.13.1"
   },
   "snowpack": {
-    "webDependencies": [
-      "es-module-shims",
-      "rxjs",
-      "rxjs/ajax",
-      "rxjs/operators",
-      "uce"
-    ]
+    "install": [
+      "es-module-shims"
+    ],
+    "installOptions": {
+      "dest": "./public/web_modules/",
+      "sourceMap": false
+    }
   }
 }
