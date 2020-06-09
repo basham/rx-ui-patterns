@@ -2,6 +2,20 @@
 
 Patterns for UI development with [RxJS](https://github.com/ReactiveX/rxjs)
 
+## Goals
+
+1. Simplify [Conduit](https://github.com/indiana-university/conduit) concepts (Values, Events, Intent, State, Reducers, Selectors, Handlers).
+2. Reuse stateful logic (like [React Hooks](https://reactjs.org/docs/hooks-intro.html)).
+3. Decouple hooks from rendering (unlike React Hooks).
+4. Make hooks directly testable.
+
+## Next steps
+
+1. Develop more examples (e.g. component communication, data loading).
+2. Name this pattern ("hook") and determine a naming convention (`use*`).
+3. Document pattern and best practices.
+4. Write unit tests for all hooks.
+
 ## Install
 
 ```
