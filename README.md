@@ -109,7 +109,7 @@ function Counter (props) {
 
 ### Reuse stateful logic
 
-React Hooks can be [refactored into reusable functions](https://reactjs.org/docs/hooks-custom.html). Such functions are named in the format of `use<Thing>`. However, built-in React Hooks, such as `useState`, `useEffect`, and others can only be called within the context of a React component.
+React Hooks can be [refactored into reusable functions](https://reactjs.org/docs/hooks-custom.html). Such functions are named in the format of `use<Thing>`. However, built-in React Hooks (such as `useState`, `useEffect`, and others) can only be called within the context of a React component.
 
 ```jsx
 function useCount (defaultValue = 0) {
