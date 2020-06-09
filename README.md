@@ -138,8 +138,8 @@ const { count$, increment } = useCount(0)
 increment()
 expect(count$.value).to.equal(1)
 
-// Note: You can update the value on a BehaviorSubject
-// and inspect the value without subscribing to it.
+// Note: Unlike an Observable, you can inspect the value
+// of a BehaviorSubject without subscribing to it.
 ```
 
 ## Next steps
