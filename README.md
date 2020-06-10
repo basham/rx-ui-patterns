@@ -8,7 +8,7 @@ In 2018, [React Hooks](https://reactjs.org/docs/hooks-intro.html) was introduced
 
 This repo is an exploration of how to leverage RxJS in UI development, inspired by React Hooks, Conduit, and other modern techniques.
 
-## Goals
+## Patterns
 
 ### Decouple stateful logic from rendering
 
@@ -77,7 +77,7 @@ function Counter (props) {
 
 Now, you can substitute React for any rendering library of your choice, without rewriting or losing any reactive logic. For example, you can use a single-purpose rendering library, such as [µhtml](https://github.com/WebReflection/uhtml).
 
-```jsx
+```js
 import { BehaviorSubject } from 'rxjs'
 import { map, takeWhile, tap } from 'rxjs/operators'
 import { html, render } from 'uhtml'
@@ -111,7 +111,7 @@ function Counter (props) {
 
 React Hooks can be [refactored into reusable functions](https://reactjs.org/docs/hooks-custom.html). Such functions are named in the format of `use<Thing>`. However, built-in React Hooks (such as `useState`, `useEffect`, and others) can only be called within the context of a React component.
 
-```jsx
+```js
 function useCount (defaultValue = 0) {
   const [count, setCount] = useState(0)
   const increment = () => setCount(count + 1)
@@ -121,7 +121,7 @@ function useCount (defaultValue = 0) {
 
 RxJS code can be organized in a similar way, yet it works in any context. However, this function must return an Observable instead of the raw value, so it can ultimately trigger renders or other effects.
 
-```jsx
+```js
 function useCount (defaultValue = 0) {
   const count$ = new BehaviorSubject(defaultValue)
   const increment = () => count$.next(count$.value + 1)
@@ -133,13 +133,67 @@ function useCount (defaultValue = 0) {
 
 [React Hooks can only be tested by explicitly rendering a component](https://reactjs.org/docs/hooks-faq.html#how-to-test-components-that-use-hooks). However, this RxJS code can be tested independently of the component, making test scripts lighter and more direct.
 
-```jsx
+```js
 const { count$, increment } = useCount(0)
 increment()
 expect(count$.value).to.equal(1)
 
 // Note: Unlike an Observable, you can inspect the value
 // of a BehaviorSubject without subscribing to it.
+```
+
+### Create props object
+
+The most common way to pass data into a rendering function is by providing a "props" object. This object needs to be updated whenever any of its data sources change. The typical way to do this is with the [`combineLatest`](https://rxjs-dev.firebaseapp.com/api/index/function/combineLatest) operator. Given a set of Observables, it emits an array containing the latest values from those Observables. That array can then be transformed into the desired object. That new object can even contain data that was not present in the Observables.
+
+```js
+import { BehaviorSubject, combineLatest } from 'rxjs'
+import { map } from 'rxjs/operators'
+
+const a$ = new BehaviorSubject(1)
+const b$ = new BehaviorSubject(1)
+const c = 1
+
+combineLatest(a$, b$).pipe(
+  map(([a, b]) => ({ a, b, c }))
+).subscribe(console.log)
+
+setTimeout(() => a$.next(2), 1000)
+setTimeout(() => b$.next(2), 2000)
+setTimeout(() => a$.next(3), 3000)
+
+// Console log:
+// { a: 1, b: 1, c: 1 }
+// { a: 2, b: 1, c: 1 }
+// { a: 2, b: 2, c: 1 }
+// { a: 3, b: 2, c: 1 }
+```
+
+With a lot of Observables, this mapping can become quite tedious. To resolve this, consider this custom operator called [`combineLatestObject`](./public/util/rx/combineLatestObject.js). It will inspect the provided object's values for any Observables, get their latest values, and map the values back to their original keys.
+
+```js
+import { BehaviorSubject } from 'rxjs'
+import { combineLatestObject } from './combineLatestObject.js'
+
+const a$ = new BehaviorSubject(1)
+const b$ = new BehaviorSubject(1)
+const c = 1
+
+combineLatestObject({
+  a: a$,
+  b: b$,
+  c
+}).subscribe(console.log)
+
+setTimeout(() => a$.next(2), 1000)
+setTimeout(() => b$.next(2), 2000)
+setTimeout(() => a$.next(3), 3000)
+
+// Console log:
+// { a: 1, b: 1, c: 1 }
+// { a: 2, b: 1, c: 1 }
+// { a: 2, b: 2, c: 1 }
+// { a: 3, b: 2, c: 1 }
 ```
 
 ## Next steps
