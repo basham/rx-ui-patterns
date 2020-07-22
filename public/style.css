@@ -70,6 +70,17 @@ h2 {
   margin: 2rem 0 0;
 }
 
+table {
+  border-spacing: 0;
+}
+
+td,
+th {
+  border-bottom: calc(1rem/16) solid var(--color-light-gray);
+  padding: var(--space-2);
+  text-align: left;
+}
+
 p {
   margin: 1rem 0 0;
 }

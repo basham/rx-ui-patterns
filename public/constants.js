@@ -11,6 +11,7 @@ export const PAGES = [
   ['mode', 'Mode', 'Change a value within a set of options.'],
   ['range', 'Range', 'Step up and down a value within a range.'],
   ['range-grid', 'Range: Grid', 'Move coordinates within a grid.'],
+  ['delete-item', 'Delete Item', 'Delete an item from a collection.'],
   ['form', 'Form', 'Edit, validate, and submit a form.'],
   ['lights', 'Lights', 'Select items to toggle their value or delete them.']
 ].map(([id, title, description]) => ({ ...expandComponent(id), description, title }))
