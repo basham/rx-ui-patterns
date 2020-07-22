@@ -183,6 +183,7 @@ button:not(.link):focus,
 }
 
 button[role="switch"] {
+  align-items: center;
   background-color: var(--color-light-gray);
   color: transparent;
   display: flex;
