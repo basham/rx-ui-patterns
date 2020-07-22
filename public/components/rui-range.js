@@ -1,15 +1,18 @@
-import { define, html, renderComponent } from '../util/dom.js'
+import { define, html } from 'uce'
+import { connect, render } from '../util/dom.js'
 import { useRange, useSubscribe } from '../util/use.js'
 
-define('rui-range', (el) => {
+define('rui-range', connect(init))
+
+function init (el) {
   const [subscribe, unsubscribe] = useSubscribe()
   const range = useRange({ defaultValue: 0, min: -5, max: 5, step: 1, wrap: true })
   const render$ = range.value$.pipe(
-    renderComponent(el, renderRange)
+    render(el, renderRange)
   )
   subscribe(render$)
   return unsubscribe
-})
+}
 
 function renderRange (props) {
   const { stepDown, stepUp, value } = props

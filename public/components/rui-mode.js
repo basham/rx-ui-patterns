@@ -1,4 +1,5 @@
-import { define, html, renderComponent } from '../util/dom.js'
+import { define, html } from 'uce'
+import { connect, render } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
 import { useMode, useSubscribe } from '../util/use.js'
 
@@ -11,7 +12,9 @@ const MODES = [
   MODE_GREEN
 ]
 
-define('rui-mode', (el) => {
+define('rui-mode', connect(init))
+
+function init (el) {
   const [subscribe, unsubscribe] = useSubscribe()
   const mode = useMode({ modes: MODES })
   const methods = {
@@ -35,11 +38,11 @@ define('rui-mode', (el) => {
     mode: mode.value.value$
   })
   const render$ = props$.pipe(
-    renderComponent(el, renderMode)
+    render(el, renderMode)
   )
   subscribe(render$)
   return unsubscribe
-})
+}
 
 function renderMode (props) {
   const { handler, mode } = props

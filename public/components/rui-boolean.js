@@ -1,8 +1,11 @@
-import { define, html, renderComponent } from '../util/dom.js'
+import { define, html } from 'uce'
+import { connect, render } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
 import { useSubscribe, useValue } from '../util/use.js'
 
-define('rui-boolean', (el) => {
+define('rui-boolean', connect(init))
+
+function init (el) {
   const [subscribe, unsubscribe] = useSubscribe()
   const bool = useValue(false)
   const toTrue = () => bool.set(true)
@@ -15,11 +18,11 @@ define('rui-boolean', (el) => {
     toggle
   })
   const render$ = props$.pipe(
-    renderComponent(el, renderBoolean)
+    render(el, renderBoolean)
   )
   subscribe(render$)
   return unsubscribe
-})
+}
 
 function renderBoolean (props) {
   const { value, toTrue, toFalse, toggle } = props

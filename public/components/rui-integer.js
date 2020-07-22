@@ -1,8 +1,11 @@
-import { define, html, renderComponent } from '../util/dom.js'
+import { define, html } from 'uce'
+import { connect, render } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
 import { useSubscribe, useValue } from '../util/use.js'
 
-define('rui-integer', (el) => {
+define('rui-integer', connect(init))
+
+function init (el) {
   const [subscribe, unsubscribe] = useSubscribe()
   const int = useValue(0)
   const increment = () => int.set(int.get() + 1)
@@ -13,11 +16,11 @@ define('rui-integer', (el) => {
     decrement
   })
   const render$ = props$.pipe(
-    renderComponent(el, renderBoolean)
+    render(el, renderBoolean)
   )
   subscribe(render$)
   return unsubscribe
-})
+}
 
 function renderBoolean (props) {
   const { value, increment, decrement } = props

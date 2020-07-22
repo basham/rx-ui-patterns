@@ -1,17 +1,20 @@
 import { combineLatest } from 'rxjs'
-import { define, focus, html, renderComponent } from '../util/dom.js'
+import { define, html } from 'uce'
+import { connect, focus, render } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
 import { useErrorSummary, useField, useMode, useRequest, useSubscribe, useValue } from '../util/use.js'
 
-define('rui-form', (el) => {
+define('rui-form', connect(init))
+
+function init (el) {
   const [subscribe, unsubscribe] = useSubscribe()
   const form = useForm()
   const render$ = form.value$.pipe(
-    renderComponent(el, renderForm)
+    render(el, renderForm)
   )
   subscribe(render$)
   return unsubscribe
-})
+}
 
 function useForm () {
   const mode = useMode({ modes: ['idle', 'edit'] })

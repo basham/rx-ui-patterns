@@ -1,24 +1,19 @@
-import { define as _define } from 'uce'
 import { renderComponentFactory } from './rx/renderComponentFactory.js'
 
-export * from 'uce'
+const noop = () => {}
 
-export function define (name, def, other = {}) {
-  _define(name, {
-    ...other,
-    init () {
-      const unsubscribe = def.call(this, this)
-      this._unsubscribe = typeof unsubscribe === 'function' ? unsubscribe : () => {}
+export function connect (fn) {
+  let teardown = null
+  return {
+    connected () {
+      const result = fn.call(this, this)
+      teardown = typeof result === 'function' ? result : noop
     },
     disconnected () {
-      this._unsubscribe()
+      teardown()
     }
-  })
+  }
 }
-
-export const renderComponent = renderComponentFactory(
-  ({ element, props, renderer }) => element.html`${renderer(props)}`
-)
 
 export function focus (elementOrId) {
   window.requestAnimationFrame(() => {
@@ -31,3 +26,7 @@ export function focus (elementOrId) {
     element.focus()
   })
 }
+
+export const render = renderComponentFactory(
+  ({ element, props, renderer }) => element.html`${renderer(props)}`
+)

@@ -1,6 +1,7 @@
 import { combineLatest, of } from 'rxjs'
 import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators'
-import { define, html, renderComponent } from '../util/dom.js'
+import { define, html } from 'uce'
+import { connect, render } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
 import { useSubscribe, useValue } from '../util/use.js'
 
@@ -17,17 +18,19 @@ const powerLabels = {
   [OFF]: 'Off'
 }
 
-define('rui-lights', (el) => {
+define('rui-lights', connect(init))
+
+function init (el) {
   const [subscribe, unsubscribe] = useSubscribe()
   const lights = useLights()
   lights.add(ON)
   const props$ = combineLatestObject(lights.props)
   const render$ = props$.pipe(
-    renderComponent(el, renderLights)
+    render(el, renderLights)
   )
   subscribe(render$)
   return unsubscribe
-})
+}
 
 function useLights () {
   const latest = useValue()
