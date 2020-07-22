@@ -3,21 +3,22 @@ import { PAGES } from '../constants.js'
 
 const [, ...pages] = PAGES
 
-define('rui-examples', {
+define('rui-patterns', {
   connected () {
     this.html`
       <hr />
-      <ul>
+      <dl>
         ${pages.map(renderLinkItem)}
-      </ul>
+      </dl>
     `
   }
 })
 
 function renderLinkItem (page) {
-  const { id, title } = page
+  const { description, id, title } = page
   const href = `?p=${id}`
   return html`
-    <li><a href=${href}>${title}</a></li>
+    <dt><a href=${href}>${title}</a></dt>
+    <dd>${description}</dd>
   `
 }
