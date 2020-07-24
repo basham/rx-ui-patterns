@@ -81,16 +81,16 @@ function renderRangeGrid (props) {
 function style (selector) {
   return css`
     ${selector} .grid {
-      --border-width: calc(1rem/16);
+      --border-width: var(--px-1);
       --full-border-width: calc(var(--border-width) * 2);
-      --size: 1rem;
+      --size: var(--space-3);
       --border-offset: calc(var(--size) - var(--border-width));
       background-image:
-        linear-gradient(to right, var(--color-light-gray) var(--full-border-width), transparent 0),
-        linear-gradient(to bottom, var(--color-light-gray) var(--full-border-width), transparent 0);
+        linear-gradient(to right, var(--color-black-1) var(--full-border-width), transparent 0),
+        linear-gradient(to bottom, var(--color-black-1) var(--full-border-width), transparent 0);
       background-position: var(--border-offset) var(--border-offset);
       background-size: var(--size) var(--size);
-      border: var(--border-width) solid var(--color-light-gray);
+      border: var(--border-width) solid var(--color-black-1);
       box-sizing: content-box;
       height: calc(var(--size) * var(--rows));
       position: relative;

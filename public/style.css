@@ -3,17 +3,26 @@
  * http://clrs.cc/
  */
 :root {
-  --color-black: #333333;
-  --color-lighter-gray: #f6f6f6;
-  --color-light-gray: #dddddd;
-  --color-dark-gray: #666666;
+  --color-black-0: #f6f6f6;
+  --color-black-1: #dddddd;
+  --color-black-6: #666666;
+  --color-black-9: #333333;
   --color-blue: #0074d9;
+  --color-purple: #b10dc9;
   --color-red: #ff4136;
   --color-white: #ffffff;
+
+  --px-1: calc(1rem/16);
+  --px-2: calc(2rem/16);
+  --px-6: calc(6rem/16);
+  --px-18: calc(18rem/16);
+
+  --space-0: 0.25rem;
   --space-1: 0.5rem;
   --space-2: 1rem;
   --space-3: 1.5rem;
   --space-4: 2rem;
+  --space-5: 2.5rem;
 }
 
 * {
@@ -22,8 +31,8 @@
 }
 
 :focus {
-  outline: calc(2rem/16) solid var(--color-blue);
-  outline-offset: calc(2rem/16);
+  outline: var(--px-2) solid var(--color-blue);
+  outline-offset: var(--px-2);
 }
 
 [hidden] {
@@ -31,11 +40,11 @@
 }
 
 html {
-  background-color: var(--color-lighter-gray);
+  background-color: var(--color-black-0);
 }
 
 body {
-  color: var(--color-black);
+  color: var(--color-black-9);
   font-size: 100%;
   font-family: system-ui, sans-serif;
   margin: 0;
@@ -43,7 +52,7 @@ body {
 }
 
 header[role="banner"] {
-  background-color: var(--color-black);
+  background-color: var(--color-black-9);
 }
 
 header[role="banner"] a {
@@ -51,23 +60,23 @@ header[role="banner"] a {
 }
 
 .content {
-  font-size: calc(18rem/16);
-  line-height: calc(28rem/16);
+  font-size: var(--px-18);
+  line-height: var(--space-3);
   margin: 0 auto;
   max-width: 30rem;
-  padding: 1rem;
+  padding: var(--space-3);
 }
 
 h1 {
-  font-size: 2rem;
-  line-height: 2.5rem;
-  margin: 1rem 0 0;
+  font-size: var(--space-4);
+  line-height: var(--space-5);
+  margin: var(--space-2) 0 0;
 }
 
 h2 {
-  font-size: 1.5rem;
-  line-height: 2rem;
-  margin: 2rem 0 0;
+  font-size: var(--space-3);
+  line-height: var(--space-4);
+  margin: var(--space-4) 0 0;
 }
 
 table {
@@ -76,13 +85,13 @@ table {
 
 td,
 th {
-  border-bottom: calc(1rem/16) solid var(--color-light-gray);
+  border-bottom: var(--px-1) solid var(--color-black-1);
   padding: var(--space-2);
   text-align: left;
 }
 
 p {
-  margin: 1rem 0 0;
+  margin: var(--space-3) 0 0;
 }
 
 ol,
@@ -94,16 +103,28 @@ dd {
 }
 
 li {
-  margin: 1rem 0 0;
+  margin: var(--space-3) 0 0;
 }
 
 dt {
   font-weight: bold;
-  margin-top: 1rem;
+  margin-top: var(--space-3);
+}
+
+a:link {
+  color: var(--color-blue);
+}
+
+a:visited {
+  color: var(--color-purple);
+}
+
+a:active {
+  color: var(--color-red);
 }
 
 small {
-  color: var(--color-dark-gray);
+  color: var(--color-black-6);
   display: block;
   font-weight: normal;
 }
@@ -115,12 +136,12 @@ label {
 
 input[type="email"],
 input[type="text"] {
-  border: calc(2rem/16) solid var(--color-light-gray);
-  border-radius: 0.25rem;
+  border: var(--px-2) solid var(--color-black-1);
+  border-radius: var(--space-0);
   line-height: inherit;
-  margin-top: 0.5rem;
+  margin-top: var(--space-1);
   max-width: 12rem;
-  padding: 0.5rem;
+  padding: var(--space-1);
   width: 100%;
 }
 
@@ -131,21 +152,21 @@ input:focus {
 
 input[type="email"]:disabled,
 input[type="text"]:disabled {
-  color: var(--color-dark-gray);
+  color: var(--color-black-6);
 }
 
 button,
 .button {
   background-color: var(--color-white);
-  border-radius: 0.25rem;
+  border-radius: var(--space-0);
   border-style: solid;
-  border: calc(2rem/16) solid var(--color-light-gray);
-  color: var(--color-black);
+  border: var(--px-2) solid var(--color-black-1);
+  color: var(--color-black-9);
   cursor: pointer;
   display: inline-block;
   flex-shrink: 0;
   font-weight: bold;
-  height: calc(40rem/16);
+  height: var(--space-5);
   line-height: inherit;
   margin: 0;
   padding: 0 0.75rem;
@@ -154,17 +175,17 @@ button,
 
 button:hover:not(:disabled),
 .button:hover:not(:disabled) {
-  background-color: var(--color-lighter-gray);
+  background-color: var(--color-black-0);
 }
 
 button:active,
 .button:active {
-  background-color: var(--color-light-gray);
+  background-color: var(--color-black-1);
 }
 
 button:disabled,
 .button:disabled {
-  color: var(--color-dark-gray);
+  color: var(--color-black-6);
   cursor: default;
 }
 
@@ -175,11 +196,11 @@ button:disabled,
   display: flex;
   justify-content: center;
   padding: 0;
-  width: calc(40rem/16);
+  width: var(--space-5);
 }
 
 .button--icon:hover {
-  background-color: var(--color-light-gray);
+  background-color: var(--color-black-1);
   border-color: transparent;
 }
 
@@ -195,21 +216,21 @@ button:not(.link):focus,
 
 button[role="switch"] {
   align-items: center;
-  background-color: var(--color-light-gray);
+  background-color: var(--color-black-1);
   color: transparent;
   display: flex;
-  padding: 0 calc(6rem/16);
+  padding: 0 var(--px-6);
 }
 
 button[role="switch"] [data-checked] {
-  border-radius: 0.25rem;
-  padding: 0 0.5rem;
+  border-radius: var(--space-0);
+  padding: 0 var(--space-1);
 }
 
 button[role="switch"][aria-checked="true"] [data-checked="true"],
 button[role="switch"][aria-checked="false"] [data-checked="false"] {
   background-color: var(--color-white);
-  color: var(--color-black);
+  color: var(--color-black-9);
 }
 
 .link {
@@ -232,16 +253,15 @@ input[type="checkbox"] + label {
 
 input[type="checkbox"] + label [data-checkbox] {
   background-color: var(--color-white);
-  border: calc(2rem/16) solid var(--color-light-gray);
-  border-radius: 0.25rem;
+  border: var(--px-2) solid var(--color-black-1);
+  border-radius: var(--space-0);
   box-sizing: content-box;
-  border-radius: 0.25rem;
   color: transparent;
   margin-right: 0.75rem;
 }
 
 input[type="checkbox"]:hover + label [data-checkbox] {
-  background-color: var(--color-lighter-gray);
+  background-color: var(--color-black-0);
 }
 
 input[type="checkbox"]:focus + label [data-checkbox] {
@@ -249,13 +269,13 @@ input[type="checkbox"]:focus + label [data-checkbox] {
 }
 
 input[type="checkbox"]:active + label [data-checkbox] {
-  background-color: var(--color-light-gray);
+  background-color: var(--color-black-1);
   border-color: var(--color-blue);
 }
 
 input[type="checkbox"]:checked + label [data-checkbox] {
-  background-color: var(--color-black);
-  border-color: var(--color-black);
+  background-color: var(--color-black-9);
+  border-color: var(--color-black-9);
   color: var(--color-white);
 }
 
@@ -265,7 +285,7 @@ input[type="checkbox"]:checked:focus + label [data-checkbox] {
 
 input[type="checkbox"]:checked:active + label [data-checkbox] {
   border-color: var(--color-blue);
-  color: var(--color-light-gray);
+  color: var(--color-black-1);
 }
 
 fieldset {
@@ -279,27 +299,27 @@ legend {
 }
 
 hr {
-  border-color: var(--color-light-gray);
+  border-color: var(--color-black-1);
   border-style: solid;
-  border-width: calc(2rem/16) 0 0;
+  border-width: var(--px-2) 0 0;
   margin: var(--space-4) 0;
 }
 
 .box:not(:empty) {
   background-color: var(--color-white);
-  border: calc(1rem/16) solid var(--color-light-gray);
-  border-radius: 0.25rem;
+  border: var(--px-1) solid var(--color-black-1);
+  border-radius: var(--space-0);
   list-style-type: none;
-  margin-top: 1rem;
+  margin-top: var(--space-2);
 }
 
 .box__row {
-  padding: 1rem;
+  padding: var(--space-2);
   margin: 0;
 }
 
 .box__row + .box__row {
-  border-top: calc(1rem/16) solid var(--color-light-gray);
+  border-top: var(--px-1) solid var(--color-black-1);
 }
 
 .field__required {
@@ -307,19 +327,19 @@ hr {
 }
 
 .field__optional {
-  color: var(--color-dark-gray);
+  color: var(--color-black-6);
   font-weight: normal;
 }
 
 .field__error {
   color: var(--color-red);
-  font-size: 1rem;
-  line-height: calc(24rem/16);
+  font-size: var(--space-2);
+  line-height: var(--space-3);
 }
 
 .error-summary {
   background-color: var(--color-white);
-  border: calc(4rem/16) solid var(--color-red);
+  border: var(--space-0) solid var(--color-red);
   padding: var(--space-2);
 }
 

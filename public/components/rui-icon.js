@@ -3,12 +3,12 @@ import { css, define } from 'uce'
 define('rui-icon', {
   style: (selector) => css`
     ${selector} {
-      --size: 1.5rem;
+      --size: var(--space-3);
       display: flex;
       fill: none;
       height: var(--size);
       stroke: currentColor;
-      stroke-width: 2;
+      stroke-width: var(--px-2);
       stroke-linecap: round;
       stroke-linejoin: round;
       width: var(--size);
