@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import { BehaviorSubject, isObservable } from 'rxjs'
-import { useValue } from '../public/util/use/useValue.js'
+import { useValue } from '../src/util/use/useValue.js'
 
 describe('useValue', () => {
   it('`value$`: exports an Observable, not BehaviorSubject', () => {
