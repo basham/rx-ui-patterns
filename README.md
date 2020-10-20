@@ -211,7 +211,7 @@ npm install
 
 ## Start
 
-Start the local development server. It should automatically open the browser to [`http://localhost:8000/`](http://localhost:8000/).
+Start the local development server. It should automatically open the browser to [`http://localhost:8080/`](http://localhost:8080/).
 
 ```
 npm run start
