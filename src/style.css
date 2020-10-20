@@ -39,10 +39,6 @@
   display: none !important;
 }
 
-html {
-  background-color: var(--color-black-0);
-}
-
 body {
   color: var(--color-black-9);
   font-size: 100%;
