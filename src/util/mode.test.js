@@ -1,6 +1,6 @@
 /* eslint-env mocha */
-import { expect } from 'chai'
-import { nextMode, parseOptions, previousMode, setMode } from '../src/util/mode.js'
+import { expect } from '@esm-bundle/chai'
+import { nextMode, parseOptions, previousMode, setMode } from './mode.js'
 
 describe('mode', () => {
   it('requires "options" to be an object', () => {
