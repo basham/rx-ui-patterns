@@ -1,7 +1,7 @@
 import { css, define, html } from 'uce'
+import { createRange, createSubscribe } from '../util/create.js'
 import { connect, render } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useRange, useSubscribe } from '../util/use.js'
 
 define('rui-range-grid', {
   ...connect(init),
@@ -9,8 +9,8 @@ define('rui-range-grid', {
 })
 
 function init (el) {
-  const [subscribe, unsubscribe] = useSubscribe()
-  const grid = useGrid({ cols: 8, rows: 8 })
+  const [subscribe, unsubscribe] = createSubscribe()
+  const grid = createGrid({ cols: 8, rows: 8 })
   const arrowHandlers = {
     ArrowDown: grid.down,
     ArrowLeft: grid.left,
@@ -35,10 +35,10 @@ function init (el) {
   return unsubscribe
 }
 
-function useGrid ({ cols, rows }) {
+function createGrid ({ cols, rows }) {
   const options = { defaultValue: 1, min: 1, step: 1, wrap: true }
-  const x = useRange({ ...options, max: cols })
-  const y = useRange({ ...options, max: rows })
+  const x = createRange({ ...options, max: cols })
+  const y = createRange({ ...options, max: rows })
   const value$ = combineLatestObject({
     cols,
     rows,
@@ -62,7 +62,7 @@ function renderRangeGrid (props) {
   const { handler, grid } = props
   const { cols, rows, x, y } = grid
   return html`
-    <p>Pair two <a href='/util/use/useRange.js'><code>useRange</code></a> hooks to create a 2D grid.</p>
+    <p>Pair two <a href='/util/create/createRange.js'><code>createRange</code></a> hooks to create a 2D grid.</p>
     <p>Move focus to the grid. Use arrow keys to navigate.</p>
     <hr />
     <div

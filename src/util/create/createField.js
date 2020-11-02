@@ -1,13 +1,13 @@
 import { shareReplay } from 'rxjs/operators'
 import { combineLatestObject } from '../rx/combineLatestObject.js'
-import { useErrorMessage } from './useErrorMessage.js'
-import { useValue } from './useValue.js'
+import { createErrorMessage } from './createErrorMessage.js'
+import { createValue } from './createValue.js'
 
-export function useField (options = {}) {
+export function createField (options = {}) {
   const { id, label = '', required = true, type = 'text', value = '' } = options
-  const field = useValue(value)
-  const errorMessage = useErrorMessage({ id, label, type })
-  const latest = useValue()
+  const field = createValue(value)
+  const errorMessage = createErrorMessage({ id, label, type })
+  const latest = createValue()
   const value$ = combineLatestObject({
     change,
     error: errorMessage.value$,

@@ -1,10 +1,10 @@
 import { mode } from '../mode.js'
 import { combineLatestObject } from '../rx.js'
-import { useValue } from './useValue.js'
+import { createValue } from './createValue.js'
 
-export function useMode (options = {}) {
+export function createMode (options = {}) {
   const { defaultValue } = mode.parseOptions(options)
-  const value = useValue(defaultValue, { distinct: true })
+  const value = createValue(defaultValue, { distinct: true })
   const { get, set, value$: rawValue$ } = value
   const methods = {
     previous: (opts) => set(mode.previous(get(), { ...options, ...opts })),

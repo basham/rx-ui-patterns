@@ -1,7 +1,7 @@
 import { define, html } from 'uce'
+import { createMode, createSubscribe } from '../util/create.js'
 import { connect, render } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useMode, useSubscribe } from '../util/use.js'
 
 const MODE_RED = '1. Red'
 const MODE_YELLOW = '2. Yellow'
@@ -15,8 +15,8 @@ const MODES = [
 define('rui-mode', connect(init))
 
 function init (el) {
-  const [subscribe, unsubscribe] = useSubscribe()
-  const mode = useMode({ modes: MODES })
+  const [subscribe, unsubscribe] = createSubscribe()
+  const mode = createMode({ modes: MODES })
   const methods = {
     previous: () => mode.previous(),
     previousWrap: () => mode.previous({ wrap: true }),

@@ -1,8 +1,8 @@
 import { map } from 'rxjs/operators'
 import { define, html } from 'uce'
+import { createSubscribe, createValue } from '../util/create.js'
 import { connect, render } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useSubscribe, useValue } from '../util/use.js'
 
 const COLORS = 'Red,Orange,Yellow,Green,Blue,Indigo,Violet'
   .split(',')
@@ -10,8 +10,8 @@ const COLORS = 'Red,Orange,Yellow,Green,Blue,Indigo,Violet'
 define('rui-delete-item', connect(init))
 
 function init (el) {
-  const [subscribe, unsubscribe] = useSubscribe()
-  const colors = useColors()
+  const [subscribe, unsubscribe] = createSubscribe()
+  const colors = createColors()
   const props$ = combineLatestObject(colors.props)
   const render$ = props$.pipe(
     render(el, renderTable)
@@ -20,7 +20,7 @@ function init (el) {
   return unsubscribe
 }
 
-function useColors () {
+function createColors () {
   const colors = COLORS
     .map((color, index) => {
       const id = index + 1
@@ -28,7 +28,7 @@ function useColors () {
       const del = () => deleteItem(id)
       return [id, { color, del, id, key }]
     })
-  const colorsMap = useValue(new Map(colors))
+  const colorsMap = createValue(new Map(colors))
   const colors$ = colorsMap.get$.pipe(
     map((colorsMap) => [...colorsMap.values()])
   )

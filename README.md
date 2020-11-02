@@ -119,10 +119,10 @@ function useCount (defaultValue = 0) {
 }
 ```
 
-RxJS code can be organized in a similar way, yet it works in any context. However, this function must return an Observable instead of the raw value, so it can ultimately trigger renders or other effects.
+RxJS code can be organized in a similar way, yet it works in any context. However, this function must return an Observable instead of the raw value, so it can ultimately trigger renders or other effects. Also, to reduce confusion over the naming convention chosen for React Hooks, this function could be named with a generic `create` prefix.
 
 ```js
-function useCount (defaultValue = 0) {
+function createCount (defaultValue = 0) {
   const count$ = new BehaviorSubject(defaultValue)
   const increment = () => count$.next(count$.value + 1)
   return { count$, increment }
@@ -134,7 +134,7 @@ function useCount (defaultValue = 0) {
 [React Hooks can only be tested by explicitly rendering a component](https://reactjs.org/docs/hooks-faq.html#how-to-test-components-that-use-hooks). However, this RxJS code can be tested independently of the component, making test scripts lighter and more direct.
 
 ```js
-const { count$, increment } = useCount(0)
+const { count$, increment } = createCount(0)
 increment()
 expect(count$.value).to.equal(1)
 
@@ -199,9 +199,8 @@ setTimeout(() => a$.next(3), 3000)
 ## Next steps
 
 1. Develop more examples (e.g. component communication, data loading).
-2. Name this pattern ("hook") and determine a naming convention (`use*`).
-3. Document pattern and best practices.
-4. Write unit tests for all stateful logic.
+2. Document pattern and best practices.
+3. Write unit tests for all stateful logic.
 
 ## Install
 

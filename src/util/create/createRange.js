@@ -1,10 +1,10 @@
 import { stepDown, stepUp, parseOptions } from '../range.js'
 import { combineLatestObject } from '../rx.js'
-import { useValue } from './useValue.js'
+import { createValue } from './createValue.js'
 
-export function useRange (options = {}) {
+export function createRange (options = {}) {
   const { defaultValue } = parseOptions(options)
-  const value = useValue(defaultValue, { distinct: true })
+  const value = createValue(defaultValue, { distinct: true })
   const { get, set, value$: rawValue$ } = value
   const methods = {
     stepDown: (opts) => set(stepDown(get(), { ...options, ...opts })),

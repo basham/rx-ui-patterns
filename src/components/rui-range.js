@@ -1,12 +1,12 @@
 import { define, html } from 'uce'
+import { createRange, createSubscribe } from '../util/create.js'
 import { connect, render } from '../util/dom.js'
-import { useRange, useSubscribe } from '../util/use.js'
 
 define('rui-range', connect(init))
 
 function init (el) {
-  const [subscribe, unsubscribe] = useSubscribe()
-  const range = useRange({ defaultValue: 0, min: -5, max: 5, step: 1, wrap: true })
+  const [subscribe, unsubscribe] = createSubscribe()
+  const range = createRange({ defaultValue: 0, min: -5, max: 5, step: 1, wrap: true })
   const render$ = range.value$.pipe(
     render(el, renderRange)
   )

@@ -1,10 +1,10 @@
 import { map, shareReplay } from 'rxjs/operators'
 import { combineLatestObject } from '../rx/combineLatestObject.js'
-import { useValue } from './useValue.js'
+import { createValue } from './createValue.js'
 
-export function useErrorMessage (options = {}) {
+export function createErrorMessage (options = {}) {
   const { id, label, type } = options
-  const message = useValue('', { distinct: true })
+  const message = createValue('', { distinct: true })
   const value$ = combineLatestObject({
     id: `${id}-error-message`,
     message: message.value$,

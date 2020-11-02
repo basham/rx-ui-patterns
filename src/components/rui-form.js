@@ -1,14 +1,14 @@
 import { combineLatest } from 'rxjs'
 import { define, html } from 'uce'
+import { createErrorSummary, createField, createMode, createRequest, createSubscribe, createValue } from '../util/create.js'
 import { connect, focus, render } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useErrorSummary, useField, useMode, useRequest, useSubscribe, useValue } from '../util/use.js'
 
 define('rui-form', connect(init))
 
 function init (el) {
-  const [subscribe, unsubscribe] = useSubscribe()
-  const form = useForm()
+  const [subscribe, unsubscribe] = createSubscribe()
+  const form = createForm()
   const render$ = form.value$.pipe(
     render(el, renderForm)
   )
@@ -16,15 +16,15 @@ function init (el) {
   return unsubscribe
 }
 
-function useForm () {
-  const mode = useMode({ modes: ['idle', 'edit'] })
-  const name = useValue('Chris')
-  const email = useValue('me@example.com')
-  const nameField = useField({
+function createForm () {
+  const mode = createMode({ modes: ['idle', 'edit'] })
+  const name = createValue('Chris')
+  const email = createValue('me@example.com')
+  const nameField = createField({
     id: 'name-field',
     label: 'Name'
   })
-  const emailField = useField({
+  const emailField = createField({
     id: 'email-field',
     label: 'Email',
     type: 'email'
@@ -32,12 +32,12 @@ function useForm () {
   const fields = [nameField, emailField]
   const fieldProps = fields.map(({ value$ }) => value$)
   const fields$ = combineLatest(fieldProps)
-  const errorSummary = useErrorSummary({
+  const errorSummary = createErrorSummary({
     fields,
     id: 'error-summary'
   })
-  const lastFocus = useValue()
-  const submitRequest = useRequest()
+  const lastFocus = createValue()
+  const submitRequest = createRequest()
   const value$ = combineLatestObject({
     mode: mode.value.value$,
     name: name.value$,

@@ -1,6 +1,6 @@
 import { Subscription, isObservable } from 'rxjs'
 
-export function useSubscribe () {
+export function createSubscribe () {
   const stack = new Set()
   return [
     subscribe.bind(null, stack),

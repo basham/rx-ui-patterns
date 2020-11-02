@@ -9,7 +9,7 @@ export const strategies = {
   switch: switchMap
 }
 
-export function useRequest (options = {}) {
+export function createRequest (options = {}) {
   const { strategy = 'exhaust' } = options
   const strategyOperator = strategies[strategy]
   if (!strategyOperator) {

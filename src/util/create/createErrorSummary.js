@@ -2,7 +2,7 @@ import { combineLatest } from 'rxjs'
 import { map, shareReplay, tap } from 'rxjs/operators'
 import { focus } from '../dom.js'
 
-export function useErrorSummary (options = {}) {
+export function createErrorSummary (options = {}) {
   const { fields, id } = options
   const fieldValues = fields.map(({ value$ }) => value$)
   const value$ = combineLatest(fieldValues).pipe(

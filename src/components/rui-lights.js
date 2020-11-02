@@ -1,9 +1,9 @@
 import { combineLatest, of } from 'rxjs'
 import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators'
 import { define, html } from 'uce'
+import { createSubscribe, createValue } from '../util/create.js'
 import { connect, render } from '../util/dom.js'
 import { combineLatestObject } from '../util/rx.js'
-import { useSubscribe, useValue } from '../util/use.js'
 
 const ON = true
 const OFF = false
@@ -21,8 +21,8 @@ const powerLabels = {
 define('rui-lights', connect(init))
 
 function init (el) {
-  const [subscribe, unsubscribe] = useSubscribe()
-  const lights = useLights()
+  const [subscribe, unsubscribe] = createSubscribe()
+  const lights = createLights()
   lights.add(ON)
   const props$ = combineLatestObject(lights.props)
   const render$ = props$.pipe(
@@ -32,11 +32,11 @@ function init (el) {
   return unsubscribe
 }
 
-function useLights () {
-  const latest = useValue()
-  const lightsMap = useValue(new Map())
-  const idCounter = useValue(0)
-  const selections = useValue(new Set())
+function createLights () {
+  const latest = createValue()
+  const lightsMap = createValue(new Map())
+  const idCounter = createValue(0)
+  const selections = createValue(new Set())
   const lights$ = lightsMap.get$.pipe(
     map((lightsMap) => [...lightsMap.values()]),
     switchMap((lights) => {
@@ -97,7 +97,7 @@ function useLights () {
       selections.get()[method](id)
       selections.update()
     }
-    const light = useLight(power, { id, key, label, select })
+    const light = createLight(power, { id, key, label, select })
     lightsMap.get().set(id, light)
     lightsMap.update()
   }
@@ -135,9 +135,9 @@ function useLights () {
   }
 }
 
-function useLight (power = OFF, other = {}) {
-  const latest = useValue()
-  const powered = useValue(power)
+function createLight (power = OFF, other = {}) {
+  const latest = createValue()
+  const powered = createValue(power)
   const methods = {
     toggle: () => powered.set(!powered.get()),
     turnOn: () => powered.set(true),
